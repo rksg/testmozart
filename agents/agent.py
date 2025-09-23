@@ -1,3 +1,9 @@
+"""Coordinator Agent
+
+This module orchestrates the autonomous test suite generation system by
+coordinating multiple specialized agents in a structured workflow.
+"""
+
 import json
 from google.adk.agents import LlmAgent, SequentialAgent, LoopAgent
 from google.adk.agents.callback_context import CallbackContext
@@ -5,15 +11,14 @@ from google.adk.tools.tool_context import ToolContext
 from google.adk.tools.base_tool import BaseTool
 from google.genai import types
 
-# Import the individual agent instances and the new workflow tool
+# Import the individual agent instances from the new structure
 from .code_analyzer import code_analyzer_agent
 from .test_case_designer import test_case_designer_agent
 from .test_implementer import test_implementer_agent
 from .test_runner import test_runner_agent
 from .debugger_and_refiner import debugger_and_refiner_agent
-from tools.workflow_tools import exit_loop
+from .result_summarizer import result_summarizer_agent
 
-# --- State Initialization ---
 
 def initialize_state(callback_context: CallbackContext):
     """Parses the initial user message and populates the session state."""
@@ -23,15 +28,16 @@ def initialize_state(callback_context: CallbackContext):
             initial_data = json.loads(user_content.parts[0].text)
             callback_context.state['source_code'] = initial_data.get('source_code')
             callback_context.state['language'] = initial_data.get('language')
-            # Initialize test_results to ensure the final agent doesn't fail
-            # if the loop is skipped or fails early.
-            callback_context.state['test_results'] = {"status": "UNKNOWN"}
         except (json.JSONDecodeError, AttributeError):
             print("Warning: Could not parse initial JSON request. Treating content as raw source code.")
             callback_context.state['source_code'] = user_content.parts[0].text
             callback_context.state['language'] = 'python'
-            callback_context.state['test_results'] = {"status": "UNKNOWN"}
-
+    
+    # Initialize all required state variables to prevent KeyError
+    callback_context.state.setdefault('static_analysis_report', {})
+    callback_context.state.setdefault('test_scenarios', '')
+    callback_context.state.setdefault('generated_test_code', '')
+    callback_context.state.setdefault('test_results', {"status": "UNKNOWN"})
 
 
 def save_analysis_to_state(tool: BaseTool, args: dict, tool_context: ToolContext, tool_response: dict):
@@ -80,12 +86,15 @@ async def build_test_runner_instruction(ctx: CallbackContext) -> str:
     Second, take the entire, raw JSON output from `execute_tests_sandboxed` and immediately pass it as the `raw_execution_output` argument to the `parse_test_results` tool.
     Your final output must be only the structured JSON object returned by the `parse_test_results` tool. Do not add any commentary or explanation.
     """
+
 test_runner_agent.instruction = build_test_runner_instruction
 test_runner_agent.output_key = "test_results"
 
-
 # 5. DebuggerAndRefiner: Read all context, save corrected code back to `generated_test_code`.
+# Import the exit_loop tool from the debugger_and_refiner package
+from .debugger_and_refiner.tools import exit_loop
 debugger_and_refiner_agent.tools.append(exit_loop)
+
 debugger_and_refiner_agent.instruction = """
 You are an expert Senior Software Debugging Engineer. Your sole purpose is to analyze a failed test run and fix the generated test code.
 
@@ -117,7 +126,6 @@ generation_pipeline = SequentialAgent(
         code_analyzer_agent,
         test_case_designer_agent,
         test_implementer_agent,
-        
     ]
 )
 
@@ -130,20 +138,6 @@ refinement_loop = LoopAgent(
         debugger_and_refiner_agent
     ],
     max_iterations=3
-)
-
-# The final agent presents the result to the user.
-result_summarizer_agent = LlmAgent(
-    name="ResultSummarizer",
-    description="Summarizes the final test generation results for the user.",
-    model="gemini-2.5-pro",
-    instruction="""You are the final reporting agent. Your task is to present the results to the user based on the final shared state.
-1. Retrieve the final test code from the `{generated_test_code}` state variable.
-2. **CRITICAL:** In the retrieved code, find the line `from source_to_test import ...` and change it to `from sample_code import ...`. This is because the final test suite will be run against `sample_code.py`.
-3. Inspect the `{test_results}` from the shared state.
-- If `test_results.status` is "PASS", your final answer MUST be only the modified Python code, enclosed in a python markdown block.
-- If `test_results.status` is anything other than "PASS", respond with a message explaining that the tests could not be automatically fixed. You MUST include both the modified Python code from step 2 (in a python markdown block) and the final `{test_results}` (in a json markdown block) to help the user debug manually.
-""",
 )
 
 # The root_agent is now a SequentialAgent that controls the deterministic high-level workflow.

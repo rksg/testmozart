@@ -1,0 +1,131 @@
+Background
+We are doing a Google Hackathon project, so the project needs to be developed using Google products/ecosystems.
+
+
+Objective
+The goal of this workshop is to leverage Vertex AI’s agent-building capabilities to automate the software testing, with a focus on:
+
+*Generating comprehensive test cases for a given codebase or module
+
+*Executing the generated test cases against the code
+
+*Analyzing the test results with actionable insights to improve quality and reliability
+
+*Supporting both Conventional (code-first) and Test-driven (test-first) development approaches.
+
+Success Criteria
+1. Model & Agent Performance
+Accuracy of Test Case Generation
+
+≥ 80% coverage of functions, methods, or components in the input codebase.
+
+Generated test cases should align with coding standards and functional requirements.
+
+Relevance of Test Cases
+
+At least 90% of generated test cases should be valid, non-redundant, and executable without major manual adjustments.
+
+Execution Accuracy
+
+≥ 95% success rate of test case execution within the CI/CD environment without manual intervention.
+
+2. Integration & Automation
+CI/CD Pipeline Compatibility
+
+Agent integrates seamlessly with existing Jenkins CI precommit pipelines 
+
+Codebase Coverage
+
+Supports languages used in our stack (Java, Python, C).
+
+3. Insights & Analytics
+Result Analysis Quality
+
+≥ 80% accuracy in identifying failed test cases and their root causes.
+
+Provides actionable recommendations for remediation.
+
+Reporting
+
+Generates comprehensive, human-readable test reports including:
+
+Coverage summary
+
+Pass/fail rates
+
+Root cause hints for failed cases
+
+4. Scalability & Maintainability
+Scalability
+
+Supports at least 50 concurrent test generation and execution workflows during peak operations.
+
+Supports at least 50 concurrent test workflows, both:
+
+Generating tests from codebases (Conventional).
+
+Generating tests from requirements/specifications (TDD).
+
+Maintainability
+
+Clear documentation and prompt-driven workflows enabling engineers to adapt or enhance the agent without Google intervention.
+
+For TDD: ability to evolve requirement-linked test cases as product requirements change.
+
+5. Learning Outcomes
+Skill Development
+
+Team members gain hands-on experience building and deploying agents in Vertex AI. 
+
+Understanding of integrating testing agent into Jenkins CI pipelines.
+
+Prototype Delivery
+
+Delivery of at least one working prototype that can be expanded into production in the next phase.
+
+Delivery of at least one working prototype supporting both development approaches:
+
+Conventional workflow: generate and run tests on an existing codebase.
+
+TDD workflow: generate tests from requirements, then write code until tests pass.
+
+
+KPIs for Measuring Success
+Metric
+
+Target
+
+Metric
+
+Target
+
+Functional coverage of generated test cases
+
+≥ 80%
+
+Accuracy of root cause suggestions
+
+≥ 80%
+
+CI/CD pipeline integration
+
+100% seamless execution
+
+Test execution reliability
+
+≥ 95%
+
+Report generation time
+
+≤ 5 minutes per module
+
+Number of trained team members
+
+≥ 5 engineers proficient
+
+Stretch Goals
+Experimentation with RAG (Retrieval-Augmented Generation) to improve context-aware test generation.
+
+Incorporate historical defect data for smarter test generation prioritization.
+
+Suggest areas for code optimisation (e.g. Agent Prompt, Agent Workflow, Microservice business logic) whenever test dataset grows. Supports Test Driven Development.
