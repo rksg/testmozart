@@ -5,13 +5,13 @@ suite generation system, organized according to Google ADK best practices.
 """
 
 # Import all agents for backward compatibility
-from .code_analyzer import code_analyzer_agent
-from .test_case_designer import test_case_designer_agent
-from .test_implementer import test_implementer_agent
-from .test_runner import test_runner_agent
-from .debugger_and_refiner import debugger_and_refiner_agent
-from .result_summarizer import result_summarizer_agent
-from .agent import root_agent
+from agents.code_analyzer import code_analyzer_agent
+from agents.test_case_designer import test_case_designer_agent
+from agents.test_implementer import test_implementer_agent
+from agents.test_runner import test_runner_agent
+from agents.debugger_and_refiner import debugger_and_refiner_agent
+from agents.result_summarizer import result_summarizer_agent
+from agents.agent import root_agent
 
 __all__ = [
     'code_analyzer_agent',

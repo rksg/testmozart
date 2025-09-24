@@ -5,6 +5,8 @@ coordinating multiple specialized agents in a structured workflow.
 """
 
 import json
+import re
+import urllib.request
 from google.adk.agents import LlmAgent, SequentialAgent, LoopAgent
 from google.adk.agents.callback_context import CallbackContext
 from google.adk.tools.tool_context import ToolContext
@@ -12,32 +14,55 @@ from google.adk.tools.base_tool import BaseTool
 from google.genai import types
 
 # Import the individual agent instances from the new structure
-from .code_analyzer import code_analyzer_agent
-from .test_case_designer import test_case_designer_agent
-from .test_implementer import test_implementer_agent
-from .test_runner import test_runner_agent
-from .debugger_and_refiner import debugger_and_refiner_agent
-from .result_summarizer import result_summarizer_agent
+from agents.code_analyzer import code_analyzer_agent
+from agents.test_case_designer import test_case_designer_agent
+from agents.test_implementer import test_implementer_agent
+from agents.test_runner import test_runner_agent
+from agents.debugger_and_refiner import debugger_and_refiner_agent
+from agents.result_summarizer import result_summarizer_agent
 
 
 def initialize_state(callback_context: CallbackContext):
     """Parses the initial user message and populates the session state."""
     user_content = callback_context.user_content
     if user_content and user_content.parts:
-        try:
-            initial_data = json.loads(user_content.parts[0].text)
-            callback_context.state['source_code'] = initial_data.get('source_code')
-            callback_context.state['language'] = initial_data.get('language')
-        except (json.JSONDecodeError, AttributeError):
-            print("Warning: Could not parse initial JSON request. Treating content as raw source code.")
-            callback_context.state['source_code'] = user_content.parts[0].text
-            callback_context.state['language'] = 'python'
-    
+        text = user_content.parts[0].text
+        # Check if the input is a URL
+        if text and re.match(r'^https?://', text):
+            try:
+                with urllib.request.urlopen(text) as response:
+                    callback_context.state['source_code'] = response.read().decode('utf-8')
+                # Assuming python for now, language can be inferred later
+                callback_context.state['language'] = 'python'
+            except Exception as e:
+                print(f"Error fetching URL: {e}")
+                # Fallback to treating the text as source code
+                callback_context.state['source_code'] = text
+                callback_context.state['language'] = 'python'
+        else:
+            try:
+                if text:
+                    initial_data = json.loads(text)
+                    callback_context.state['source_code'] = initial_data.get('source_code')
+                    callback_context.state['language'] = initial_data.get('language')
+                else:
+                    callback_context.state['source_code'] = ''
+                    callback_context.state['language'] = 'python'
+            except (json.JSONDecodeError, AttributeError):
+                print("Warning: Could not parse initial JSON request. Treating content as raw source code.")
+                callback_context.state['source_code'] = text
+                callback_context.state['language'] = 'python'
+
     # Initialize all required state variables to prevent KeyError
-    callback_context.state.setdefault('static_analysis_report', {})
-    callback_context.state.setdefault('test_scenarios', '')
-    callback_context.state.setdefault('generated_test_code', '')
-    callback_context.state.setdefault('test_results', {"status": "UNKNOWN"})
+    state_initializers = {
+        'static_analysis_report': {},
+        'test_scenarios': '',
+        'generated_test_code': '',
+        'test_results': {'status': 'UNKNOWN'},
+    }
+    for key, default_value in state_initializers.items():
+        if callback_context.state.get(key) is None:
+            callback_context.state[key] = default_value
 
 
 def save_analysis_to_state(tool: BaseTool, args: dict, tool_context: ToolContext, tool_response: dict):
@@ -58,6 +83,7 @@ def save_analysis_to_state(tool: BaseTool, args: dict, tool_context: ToolContext
 
 # 1. CodeAnalyzer: Use the callback to save output.
 code_analyzer_agent.after_tool_callback = save_analysis_to_state
+code_analyzer_agent.instruction += "\n\nYou will receive the source code in the `{source_code}` state variable and the language in the `{language}` state variable."
 
 # 2. TestCaseDesigner: Read from `static_analysis_report`, save to `test_scenarios`.
 test_case_designer_agent.instruction += "\n\nYou will receive the static analysis report in the `{static_analysis_report}` state variable."
@@ -75,7 +101,7 @@ async def build_test_runner_instruction(ctx: CallbackContext) -> str:
 
     source_code_json_str = json.dumps(source_code)
     generated_code_json_str = json.dumps(generated_code)
-    
+
     return f"""
     You are a highly reliable test execution engine. Your task is to execute a test suite against source code.
 
@@ -92,7 +118,7 @@ test_runner_agent.output_key = "test_results"
 
 # 5. DebuggerAndRefiner: Read all context, save corrected code back to `generated_test_code`.
 # Import the exit_loop tool from the debugger_and_refiner package
-from .debugger_and_refiner.tools import exit_loop
+from agents.debugger_and_refiner.tools import exit_loop
 debugger_and_refiner_agent.tools.append(exit_loop)
 
 debugger_and_refiner_agent.instruction = """

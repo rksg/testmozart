@@ -5,7 +5,7 @@ based on a code analysis report.
 """
 
 from google.adk.agents import LlmAgent
-from .tools import generate_test_scenarios
+from agents.test_case_designer.tools import generate_test_scenarios
 
 
 def create_test_case_designer_agent() -> LlmAgent:

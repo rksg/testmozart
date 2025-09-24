@@ -5,7 +5,7 @@ the generated test code.
 """
 
 from google.adk.agents import LlmAgent
-from .tools import exit_loop
+from agents.debugger_and_refiner.tools import exit_loop
 
 
 def create_debugger_and_refiner_agent() -> LlmAgent:
