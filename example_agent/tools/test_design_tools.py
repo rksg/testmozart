@@ -56,4 +56,3 @@ def generate_test_scenarios(natural_language_output: str) -> List[Dict[str, Any]
         raise ValueError("Could not parse any valid scenarios from the provided text.")
 
     return scenarios
-

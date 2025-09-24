@@ -5,9 +5,43 @@ import os
 import sys
 import subprocess
 import re  # Added missing import for the parser function
+import logging
 from typing import Any, Dict, List, Optional
 # import docker # No longer needed
 from pydantic import BaseModel, Field
+from .execution_tracker import execution_tracker
+
+# Set up logging
+logger = logging.getLogger(__name__)
+
+def _clean_test_code(test_code: str) -> str:
+    """
+    Clean test code to remove markdown formatting and other artifacts.
+    
+    Args:
+        test_code: Raw test code that may contain markdown formatting
+        
+    Returns:
+        Clean Python code ready for execution
+    """
+    # Remove markdown code block markers
+    clean_code = test_code.strip()
+    
+    # Remove opening ```python or ``` markers
+    if clean_code.startswith('```python'):
+        clean_code = clean_code[9:].strip()
+    elif clean_code.startswith('```'):
+        clean_code = clean_code[3:].strip()
+    
+    # Remove closing ``` markers
+    if clean_code.endswith('```'):
+        clean_code = clean_code[:-3].strip()
+    
+    # Fix import statements - change source_to_test to sample_code
+    clean_code = clean_code.replace('from source_to_test import', 'from sample_code import')
+    clean_code = clean_code.replace('import source_to_test', 'import sample_code')
+    
+    return clean_code
 
 # --- Pydantic Models for Structured Output ---
 
@@ -24,6 +58,21 @@ class TestResult(BaseModel):
     summary: str = Field(..., description="The summary line from the test runner (e.g., '1 failed, 1 passed').")
     failures: List[TestFailureDetail] = Field(default_factory=list, description="A list of detailed failure information.")
 
+# --- Helper Functions ---
+
+def _count_test_functions(test_code: str) -> int:
+    """Count the number of test functions in the test code."""
+    import re
+    test_functions = re.findall(r'def (test_\w+)', test_code)
+    return len(test_functions)
+
+def _print_progress(message: str, step: int = None, total: int = None):
+    """Print progress message to console with optional step counter."""
+    if step is not None and total is not None:
+        print(f"[{step}/{total}] {message}")
+    else:
+        print(f"🔧 {message}")
+
 # --- Tool Implementations ---
 
 def execute_tests_sandboxed(source_code_under_test: str, generated_test_code: str) -> Dict[str, Any]:
@@ -37,25 +86,38 @@ def execute_tests_sandboxed(source_code_under_test: str, generated_test_code: st
     Returns:
         A dictionary containing the raw stdout, stderr, and exit code from the execution.
     """
+    logger.info("Starting sandboxed test execution")
+    
+    # Count test functions for progress tracking
+    test_count = _count_test_functions(generated_test_code)
+    _print_progress(f"Preparing to execute {test_count} test cases...")
+    
+    # Start execution tracking
+    session_id = execution_tracker.start_execution(generated_test_code, source_code_under_test)
     
     # Create a temporary directory to work in
     with tempfile.TemporaryDirectory() as temp_dir:
         
         # --- 1. Create files ---
-        source_path = os.path.join(temp_dir, "source_to_test.py")
+        _print_progress("Creating test environment files...", 1, 5)
+        source_path = os.path.join(temp_dir, "sample_code.py")
         test_path = os.path.join(temp_dir, "test_generated.py")
         req_path = os.path.join(temp_dir, "requirements.txt")
 
         with open(source_path, "w") as f:
             f.write(source_code_under_test)
             
+        # Clean the test code to remove any markdown formatting
+        clean_test_code = _clean_test_code(generated_test_code)
+        
         with open(test_path, "w") as f:
-            f.write(generated_test_code)
+            f.write(clean_test_code)
 
         with open(req_path, "w") as f:
             f.write("pytest\n")
 
         # --- 2. Create a virtual environment ---
+        _print_progress("Creating virtual environment...", 2, 5)
         venv_path = os.path.join(temp_dir, "venv")
         try:
             # Use the currently running Python executable to create the venv
@@ -82,6 +144,7 @@ def execute_tests_sandboxed(source_code_under_test: str, generated_test_code: st
         pytest_exe = os.path.join(venv_path, bin_dir, "pytest")
 
         # --- 4. Install requirements into the venv ---
+        _print_progress("Installing test dependencies (pytest)...", 3, 5)
         try:
             subprocess.run(
                 [pip_exe, "install", "-r", req_path],
@@ -98,21 +161,31 @@ def execute_tests_sandboxed(source_code_under_test: str, generated_test_code: st
             }
 
         # --- 5. Run tests using the venv's pytest ---
+        _print_progress(f"Executing {test_count} test cases...", 4, 5)
         # We run from temp_dir so pytest can find 'source_to_test.py'
         # We do NOT use check=True here, as a non-zero exit code is
         # the expected result for failing tests.
         result = subprocess.run(
-            [pytest_exe, test_path],
+            [pytest_exe, test_path, "-v"],  # Added -v for verbose output
             capture_output=True,
             text=True,
             cwd=temp_dir
         )
 
-        return {
+        raw_output = {
             "exit_code": result.returncode,
             "stdout": result.stdout,
             "stderr": result.stderr
         }
+        
+        # Print completion status with results
+        if result.returncode == 0:
+            _print_progress(f"✅ All {test_count} test cases executed - all passed!", 5, 5)
+        else:
+            _print_progress(f"⚠️ {test_count} test cases executed - some failures", 5, 5)
+        
+        logger.info(f"Test execution completed with exit code: {result.returncode}")
+        return raw_output
     # temp_dir and its contents (venv, files) are automatically deleted here
 
 
@@ -126,6 +199,9 @@ def parse_test_results(raw_execution_output: Dict[str, Any]) -> Dict[str, Any]:
     Returns:
         A dictionary conforming to the TestResult schema.
     """
+    _print_progress("Analyzing test results...")
+    logger.info("Parsing test execution results")
+    
     exit_code = raw_execution_output.get('exit_code', -1)
     stdout = raw_execution_output.get('stdout', '')
     
@@ -199,5 +275,19 @@ def parse_test_results(raw_execution_output: Dict[str, Any]) -> Dict[str, Any]:
             ))
 
     result = TestResult(status=status, summary=summary, failures=failures)
-    return result.model_dump()
+    parsed_results = result.model_dump()
+    
+    # Update execution tracking with results
+    # Note: We need to get the session_id from the current session
+    if execution_tracker.current_session:
+        session_id = execution_tracker.current_session["session_id"]
+        execution_metrics = execution_tracker.end_execution(session_id, parsed_results, raw_execution_output)
+        
+        # Add execution metrics to the results
+        parsed_results["execution_metrics"] = execution_metrics
+        parsed_results["reliability_metrics"] = execution_tracker.get_reliability_metrics()
+        
+        logger.info(f"Added execution tracking data to results")
+    
+    return parsed_results
 

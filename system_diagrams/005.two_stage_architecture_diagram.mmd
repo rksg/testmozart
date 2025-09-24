@@ -1,0 +1,88 @@
+```mermaid
+graph TD
+    classDef stage1 fill:#e6f3ff,stroke:#007bff,stroke-width:2px;
+    classDef stage2 fill:#fff2cc,stroke:#ff9900,stroke-width:2px;
+    classDef controller fill:#f8d7da,stroke:#721c24,stroke-width:2px;
+    classDef state fill:#d4edda,stroke:#155724,stroke-width:2px,shape:cylinder;
+    classDef flow fill:#f0f0f0,stroke:#333;
+
+    subgraph TwoStageSystem [Two-Stage Test Generation System]
+        direction TB
+        
+        Start(Start: main_two_stage.py) --> |User Request| Init[Initialize Two-Stage State]
+        Init -.-> |writes initial data| StateDB[(Shared State)]
+        
+        %% Initial Analysis (Reused)
+        Init --> CodeAnalyzer[CodeAnalyzer]
+        CodeAnalyzer -.-> |static_analysis_report| StateDB
+        
+        %% Stage 1: Coverage Optimization Loop
+        subgraph Stage1 [Stage 1: Coverage Optimization Loop]
+            direction TB
+            CodeAnalyzer --> CovLoop{Coverage Loop}
+            
+            subgraph CovLoopAgents [Max 5 Iterations]
+                SCD[ScenarioCoverageDesigner] --> |coverage_focused_scenarios| StateDB
+                StateDB -.-> CV[CoverageValidator] 
+                CV --> |coverage_validation_report| StateDB
+                StateDB -.-> CLC[CoverageLoopController]
+                CLC --> CovDecision{Continue Coverage Loop?}
+            end
+            
+            CovLoop --> SCD
+            SCD --> CV
+            CV --> CLC
+            CovDecision -- "Yes (coverage < 100%)" --> SCD
+            CovDecision -- "No (coverage ≥ 80% OR max iterations)" --> Stage1Complete[Stage 1 Complete]
+        end
+        
+        %% Stage 2 Initialization
+        Stage1Complete --> S2Init[Stage2Initializer]
+        S2Init -.-> |test_status_tracking| StateDB
+        
+        %% Stage 2: Execution Quality Loop  
+        subgraph Stage2 [Stage 2: Execution Quality Loop]
+            direction TB
+            S2Init --> ExecLoop{Execution Loop}
+            
+            subgraph ExecLoopAgents [Max 10 Iterations]
+                ITI[IncrementalTestImplementer] --> |incremental_test_implementation| StateDB
+                StateDB -.-> STR[SelectiveTestRunner]
+                STR --> |selective_test_results| StateDB
+                StateDB -.-> S2IM[Stage2IterationManager]
+                S2IM -.-> |test_status_summary| StateDB
+                StateDB -.-> ELC[ExecutionLoopController]
+                ELC --> ExecDecision{Continue Execution Loop?}
+            end
+            
+            ExecLoop --> ITI
+            ITI --> STR
+            STR --> S2IM
+            S2IM --> ELC
+            ExecDecision -- "Yes (tests failing)" --> ITI
+            ExecDecision -- "No (all passed OR ≥95% success)" --> Stage2Complete[Stage 2 Complete]
+        end
+        
+        %% Final Reporting (Reused)
+        subgraph FinalReporting [Final Reporting]
+            Stage2Complete --> ReportGen[ReportGenerator]
+            StateDB -.-> ReportGen
+            ReportGen --> |comprehensive_report| StateDB
+            StateDB -.-> ResultSum[ResultSummarizer]
+            ResultSum --> FinalOutput[Final Test Suite]
+        end
+    end
+    
+    FinalOutput --> |Save to output/final_test_suite.py| End(End)
+    
+    %% Styling
+    class SCD,CV,CLC stage1;
+    class ITI,STR,S2IM,ELC stage2;
+    class CovDecision,ExecDecision controller;
+    class StateDB state;
+    class Start,End,Init,CodeAnalyzer,S2Init,ReportGen,ResultSum,FinalOutput flow;
+
+    %% Key Features Annotations
+    Stage1 -.- Feature1[["🎯 Stage 1 Features:<br/>• Pure coverage optimization<br/>• No test execution<br/>• Max 5 iterations<br/>• Target: 100% coverage"]]
+    Stage2 -.- Feature2[["⚡ Stage 2 Features:<br/>• Incremental improvements<br/>• Selective test execution<br/>• Status tracking<br/>• Max 10 iterations"]]
+```

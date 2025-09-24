@@ -1,0 +1,80 @@
+graph TD
+    A[User Request] --> B[CoordinatorAgent]
+    
+    %% Initial Analysis Phase
+    B --> C[InitialAnalysis]
+    C --> D[CodeAnalyzer]
+    D --> E[Static Analysis Report]
+    
+    %% Smart Quality-Driven Design Loop
+    E --> F[QualityDrivenDesignLoop]
+    F --> G[SmartImprovementCoordinator]
+    
+    %% Decision Logic
+    G --> H{Problem Type?}
+    H -->|Syntax/Execution Error| I[Skip Scenario Generation]
+    H -->|Coverage Gap| J[Generate New Scenarios]
+    H -->|Quality Issue| K[Keep Scenarios, Improve Code]
+    H -->|Mixed Issues| L[Comprehensive Improvement]
+    H -->|No Issues| M[Skip All Improvements]
+    
+    %% Conditional Test Case Design
+    I --> N[EnhancedTestCaseDesigner - SKIP]
+    J --> O[EnhancedTestCaseDesigner - RUN]
+    K --> P[EnhancedTestCaseDesigner - SKIP]
+    L --> Q[EnhancedTestCaseDesigner - RUN]
+    M --> R[EnhancedTestCaseDesigner - SKIP]
+    
+    %% Common Flow Continuation
+    N --> S[CoverageAnalyzer]
+    O --> S
+    P --> S
+    Q --> S
+    R --> S
+    
+    S --> T[TestImplementer]
+    T --> U[TestRunner]
+    U --> V[FeedbackAnalyzer]
+    V --> W[QualityImprovementLoop]
+    
+    %% Loop Decision
+    W --> X{Continue Loop?}
+    X -->|Yes| G
+    X -->|No| Y[ExecutionRefinementLoop]
+    
+    %% Execution Refinement Loop
+    Y --> Z[ExecutionTestRunner]
+    Z --> AA[DebuggerAndRefiner]
+    AA --> BB{Tests Pass?}
+    BB -->|No| Z
+    BB -->|Yes| CC[ReportGenerator]
+    
+    %% Final Reporting
+    CC --> DD[ResultSummarizer]
+    DD --> EE[Final Test Suite]
+    DD --> FF[Human Readable Report]
+    DD --> GG[Comprehensive Report]
+    
+    %% Styling
+    classDef newComponent fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef decision fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef conditional fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef output fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
+    
+    class G,H newComponent
+    class H,X,BB decision
+    class I,J,K,L,M,N,O,P,Q,R conditional
+    class EE,FF,GG output
+    
+    %% Annotations
+    G -.->|Analyzes improvement needs| H
+    H -.->|Smart routing based on error type| I
+    H -.->|Avoids unnecessary scenario regeneration| J
+    
+    %% Legend
+    subgraph Legend[" "]
+        L1[New Smart Components]:::newComponent
+        L2[Decision Points]:::decision
+        L3[Conditional Execution]:::conditional
+        L4[Final Outputs]:::output
+    end

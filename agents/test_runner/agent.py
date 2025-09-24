@@ -5,7 +5,7 @@ in a secure sandbox and parses the results.
 """
 
 from google.adk.agents import LlmAgent
-from agents.test_runner.tools import execute_tests_sandboxed, parse_test_results
+from .tools import execute_tests_sandboxed, parse_test_results
 
 
 def create_test_runner_agent() -> LlmAgent:

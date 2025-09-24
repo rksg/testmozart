@@ -1,0 +1,507 @@
+13:52:14 | INFO  | Two-stage architecture state initialized
+13:52:19 | INFO  | Saved analysis result to state: {'status': 'success', 'structure': [{'type': 'class', 'name': 'Calculator', 'docstring': 'A simple calculator class with various mathematical operations.', 'methods': [{'name': 'add', 'docstring': 'Adds two numbers together.', 'parameters': [{'name': 'self', 'annotation': None}, {'name': 'a', 'annotation': 'int'}, {'name': 'b', 'annotation': 'int'}], 'return_type': 'int'}, {'name': 'subtract', 'docstring': 'Subtracts the second number from the first.', 'parameters': [{'name': 'self', 'annotation': None}, {'name': 'a', 'annotation': 'int'}, {'name': 'b', 'annotation': 'int'}], 'return_type': 'int'}, {'name': 'multiply', 'docstring': 'Multiplies two numbers together.', 'parameters': [{'name': 'self', 'annotation': None}, {'name': 'a', 'annotation': 'int'}, {'name': 'b', 'annotation': 'int'}], 'return_type': 'int'}, {'name': 'divide', 'docstring': 'Divides the first number by the second.', 'parameters': [{'name': 'self', 'annotation': None}, {'name': 'a', 'annotation': 'int'}, {'name': 'b', 'annotation': 'int'}], 'return_type': 'float'}, {'name': 'power', 'docstring': 'Raises base to the power of exponent.', 'parameters': [{'name': 'self', 'annotation': None}, {'name': 'base', 'annotation': 'int'}, {'name': 'exponent', 'annotation': 'int'}], 'return_type': 'int'}]}, {'type': 'class', 'name': 'StringProcessor', 'docstring': 'A class for processing strings.', 'methods': [{'name': 'reverse_string', 'docstring': 'Reverses the input string.', 'parameters': [{'name': 'self', 'annotation': None}, {'name': 'text', 'annotation': 'str'}], 'return_type': 'str'}, {'name': 'count_words', 'docstring': 'Counts the number of words in the text.', 'parameters': [{'name': 'self', 'annotation': None}, {'name': 'text', 'annotation': 'str'}], 'return_type': 'int'}, {'name': 'capitalize_words', 'docstring': 'Capitalizes the first letter of each word.', 'parameters': [{'name': 'self', 'annotation': None}, {'name': 'text', 'annotation': 'str'}], 'return_type': 'str'}]}, {'name': 'greet', 'docstring': 'Returns a greeting message.', 'parameters': [{'name': 'name', 'annotation': 'str'}], 'return_type': 'str', 'type': 'function'}, {'name': 'factorial', 'docstring': 'Calculates the factorial of a number.', 'parameters': [{'name': 'n', 'annotation': 'int'}], 'return_type': 'int', 'type': 'function'}, {'name': 'find_max', 'docstring': 'Finds the maximum number in a list.', 'parameters': [{'name': 'numbers', 'annotation': 'list'}], 'return_type': 'int', 'type': 'function'}, {'name': 'is_palindrome', 'docstring': 'Checks if a string is a palindrome.', 'parameters': [{'name': 'text', 'annotation': 'str'}], 'return_type': 'bool', 'type': 'function'}]}
+13:52:27 | INFO  | Generating coverage-focused scenarios (iteration 0)
+13:52:27 | INFO  | Generated 18 scenarios for coverage optimization
+13:52:27 | INFO  | 📋 Generated Test Scenarios:
+13:52:27 | INFO  |    1. [HIGH] Test the 'greet' function with typical inputs
+13:52:27 | INFO  |       Target: function -> greet
+13:52:27 | INFO  |       Coverage: function:greet
+13:52:27 | INFO  |    2. [MEDIUM] Test the 'greet' function with edge case inputs
+13:52:27 | INFO  |       Target: function -> greet
+13:52:27 | INFO  |       Coverage: function:greet
+13:52:27 | INFO  |    3. [HIGH] Test the 'factorial' function with typical inputs
+13:52:27 | INFO  |       Target: function -> factorial
+13:52:27 | INFO  |       Coverage: function:factorial
+13:52:27 | INFO  |    4. [MEDIUM] Test the 'factorial' function with edge case inputs
+13:52:27 | INFO  |       Target: function -> factorial
+13:52:27 | INFO  |       Coverage: function:factorial
+13:52:27 | INFO  |    5. [HIGH] Test the 'find_max' function with typical inputs
+13:52:27 | INFO  |       Target: function -> find_max
+13:52:27 | INFO  |       Coverage: function:find_max
+13:52:27 | INFO  |    6. [MEDIUM] Test the 'find_max' function with edge case inputs
+13:52:27 | INFO  |       Target: function -> find_max
+13:52:27 | INFO  |       Coverage: function:find_max
+13:52:27 | INFO  |    7. [HIGH] Test the 'is_palindrome' function with typical inputs
+13:52:27 | INFO  |       Target: function -> is_palindrome
+13:52:27 | INFO  |       Coverage: function:is_palindrome
+13:52:27 | INFO  |    8. [MEDIUM] Test the 'is_palindrome' function with edge case inputs
+13:52:27 | INFO  |       Target: function -> is_palindrome
+13:52:27 | INFO  |       Coverage: function:is_palindrome
+13:52:27 | INFO  |    9. [HIGH] Test the 'add' method of 'Calculator' class
+13:52:27 | INFO  |       Target: method -> Calculator.add
+13:52:27 | INFO  |       Coverage: method:Calculator.add
+13:52:27 | INFO  |    10. [HIGH] Test the 'subtract' method of 'Calculator' class
+13:52:27 | INFO  |       Target: method -> Calculator.subtract
+13:52:27 | INFO  |       Coverage: method:Calculator.subtract
+13:52:27 | INFO  |    11. [HIGH] Test the 'multiply' method of 'Calculator' class
+13:52:27 | INFO  |       Target: method -> Calculator.multiply
+13:52:27 | INFO  |       Coverage: method:Calculator.multiply
+13:52:27 | INFO  |    12. [HIGH] Test the 'divide' method of 'Calculator' class
+13:52:27 | INFO  |       Target: method -> Calculator.divide
+13:52:27 | INFO  |       Coverage: method:Calculator.divide
+13:52:27 | INFO  |    13. [HIGH] Test the 'power' method of 'Calculator' class
+13:52:27 | INFO  |       Target: method -> Calculator.power
+13:52:27 | INFO  |       Coverage: method:Calculator.power
+13:52:27 | INFO  |    14. [HIGH] Test the 'reverse_string' method of 'StringProcessor' class
+13:52:27 | INFO  |       Target: method -> StringProcessor.reverse_string
+13:52:27 | INFO  |       Coverage: method:StringProcessor.reverse_string
+13:52:27 | INFO  |    15. [HIGH] Test the 'count_words' method of 'StringProcessor' class
+13:52:27 | INFO  |       Target: method -> StringProcessor.count_words
+13:52:27 | INFO  |       Coverage: method:StringProcessor.count_words
+13:52:27 | INFO  |    16. [HIGH] Test the 'capitalize_words' method of 'StringProcessor' class
+13:52:27 | INFO  |       Target: method -> StringProcessor.capitalize_words
+13:52:27 | INFO  |       Coverage: method:StringProcessor.capitalize_words
+13:52:27 | INFO  |    17. [HIGH] Test instantiation and basic usage of 'Calculator' class
+13:52:27 | INFO  |       Target: class -> Calculator
+13:52:27 | INFO  |       Coverage: class:Calculator
+13:52:27 | INFO  |    18. [HIGH] Test instantiation and basic usage of 'StringProcessor' class
+13:52:27 | INFO  |       Target: class -> StringProcessor
+13:52:27 | INFO  |       Coverage: class:StringProcessor
+13:52:39 | INFO  | Validating coverage for 18 scenarios
+13:52:39 | INFO  | Coverage validation complete: 100.00% overall coverage
+13:52:39 | INFO  | 📊 Coverage Breakdown:
+13:52:39 | INFO  |    Functions: 100.0% (4/4 covered)
+13:52:39 | INFO  |    Classes: 100.0% (2/2 covered)
+13:52:39 | INFO  |    Methods: 100.0% (8/8 covered)
+13:52:39 | INFO  | ✅ All units covered!
+13:52:42 | INFO  | Evaluating coverage loop continuation (iteration 0/5)
+13:52:42 | INFO  | Continuing coverage loop: Coverage insufficient: 0% (target: 100%). Gap: 100.0%. 5 iterations remaining.
+13:52:46 | INFO  | Exiting coverage loop: Coverage target of 100% achieved.
+13:52:46 | INFO  | Final coverage achieved: 100%
+13:52:46 | INFO  | Coverage loop exit complete: READY for Stage 2
+13:52:49 | INFO  | Coverage loop exit signal sent - escalating to parent agent
+13:52:56 | INFO  | write_test_code called with scenario: Test the 'greet' function with typical inputs
+13:52:56 | INFO  | write_test_code returning function: test_the_greet_function_with_typical_inputs
+13:52:56 | INFO  | 🧪 Generated Test Function:
+13:52:56 | INFO  |    Function: test_the_greet_function_with_typical_inputs()
+13:52:56 | INFO  |    Scenario: Test the 'greet' function with typical inputs
+13:53:00 | INFO  | write_test_code called with scenario: Test the 'greet' function with edge case inputs
+13:53:00 | INFO  | write_test_code returning function: test_the_greet_function_with_edge_case_inputs
+13:53:00 | INFO  | 🧪 Generated Test Function:
+13:53:00 | INFO  |    Function: test_the_greet_function_with_edge_case_inputs()
+13:53:00 | INFO  |    Scenario: Test the 'greet' function with edge case inputs
+13:53:03 | INFO  | write_test_code called with scenario: Test the 'factorial' function with typical inputs
+13:53:03 | INFO  | write_test_code returning function: test_the_factorial_function_with_typical_inputs
+13:53:03 | INFO  | 🧪 Generated Test Function:
+13:53:03 | INFO  |    Function: test_the_factorial_function_with_typical_inputs()
+13:53:03 | INFO  |    Scenario: Test the 'factorial' function with typical inputs
+13:53:06 | INFO  | write_test_code called with scenario: Test the 'factorial' function with edge case inputs
+13:53:06 | INFO  | write_test_code returning function: test_the_factorial_function_with_edge_case_inputs
+13:53:06 | INFO  | 🧪 Generated Test Function:
+13:53:06 | INFO  |    Function: test_the_factorial_function_with_edge_case_inputs()
+13:53:06 | INFO  |    Scenario: Test the 'factorial' function with edge case inputs
+13:53:10 | INFO  | write_test_code called with scenario: Test the 'find_max' function with typical inputs
+13:53:10 | INFO  | write_test_code returning function: test_the_find_max_function_with_typical_inputs
+13:53:10 | INFO  | 🧪 Generated Test Function:
+13:53:10 | INFO  |    Function: test_the_find_max_function_with_typical_inputs()
+13:53:10 | INFO  |    Scenario: Test the 'find_max' function with typical inputs
+13:53:14 | INFO  | write_test_code called with scenario: Test the 'find_max' function with edge case inputs
+13:53:14 | INFO  | write_test_code returning function: test_the_find_max_function_with_edge_case_inputs
+13:53:14 | INFO  | 🧪 Generated Test Function:
+13:53:14 | INFO  |    Function: test_the_find_max_function_with_edge_case_inputs()
+13:53:14 | INFO  |    Scenario: Test the 'find_max' function with edge case inputs
+13:53:18 | INFO  | write_test_code called with scenario: Test the 'is_palindrome' function with typical inputs
+13:53:18 | INFO  | write_test_code returning function: test_the_is_palindrome_function_with_typical_inputs
+13:53:18 | INFO  | 🧪 Generated Test Function:
+13:53:18 | INFO  |    Function: test_the_is_palindrome_function_with_typical_inputs()
+13:53:18 | INFO  |    Scenario: Test the 'is_palindrome' function with typical inputs
+13:53:22 | INFO  | write_test_code called with scenario: Test the 'is_palindrome' function with edge case inputs
+13:53:22 | INFO  | write_test_code returning function: test_the_is_palindrome_function_with_edge_case_inputs
+13:53:22 | INFO  | 🧪 Generated Test Function:
+13:53:22 | INFO  |    Function: test_the_is_palindrome_function_with_edge_case_inputs()
+13:53:22 | INFO  |    Scenario: Test the 'is_palindrome' function with edge case inputs
+13:53:27 | INFO  | write_test_code called with scenario: Test the 'add' method of 'Calculator' class
+13:53:27 | INFO  | write_test_code returning function: test_the_add_method_of_calculator_class
+13:53:27 | INFO  | 🧪 Generated Test Function:
+13:53:27 | INFO  |    Function: test_the_add_method_of_calculator_class()
+13:53:27 | INFO  |    Scenario: Test the 'add' method of 'Calculator' class
+13:53:31 | INFO  | write_test_code called with scenario: Test the 'subtract' method of 'Calculator' class
+13:53:31 | INFO  | write_test_code returning function: test_the_subtract_method_of_calculator_class
+13:53:31 | INFO  | 🧪 Generated Test Function:
+13:53:31 | INFO  |    Function: test_the_subtract_method_of_calculator_class()
+13:53:31 | INFO  |    Scenario: Test the 'subtract' method of 'Calculator' class
+13:53:34 | INFO  | write_test_code called with scenario: Test the 'multiply' method of 'Calculator' class
+13:53:34 | INFO  | write_test_code returning function: test_the_multiply_method_of_calculator_class
+13:53:34 | INFO  | 🧪 Generated Test Function:
+13:53:34 | INFO  |    Function: test_the_multiply_method_of_calculator_class()
+13:53:34 | INFO  |    Scenario: Test the 'multiply' method of 'Calculator' class
+13:53:38 | INFO  | write_test_code called with scenario: Test the 'divide' method of 'Calculator' class
+13:53:38 | INFO  | write_test_code returning function: test_the_divide_method_of_calculator_class
+13:53:38 | INFO  | 🧪 Generated Test Function:
+13:53:38 | INFO  |    Function: test_the_divide_method_of_calculator_class()
+13:53:38 | INFO  |    Scenario: Test the 'divide' method of 'Calculator' class
+13:53:41 | INFO  | write_test_code called with scenario: Test the 'power' method of 'Calculator' class
+13:53:41 | INFO  | write_test_code returning function: test_the_power_method_of_calculator_class
+13:53:41 | INFO  | 🧪 Generated Test Function:
+13:53:41 | INFO  |    Function: test_the_power_method_of_calculator_class()
+13:53:41 | INFO  |    Scenario: Test the 'power' method of 'Calculator' class
+13:53:45 | INFO  | write_test_code called with scenario: Test the 'reverse_string' method of 'StringProcessor' class
+13:53:45 | INFO  | write_test_code returning function: test_the_reverse_string_method_of_stringprocessor_class
+13:53:45 | INFO  | 🧪 Generated Test Function:
+13:53:45 | INFO  |    Function: test_the_reverse_string_method_of_stringprocessor_class()
+13:53:45 | INFO  |    Scenario: Test the 'reverse_string' method of 'StringProcessor' class
+13:53:49 | INFO  | write_test_code called with scenario: Test the 'count_words' method of 'StringProcessor' class
+13:53:49 | INFO  | write_test_code returning function: test_the_count_words_method_of_stringprocessor_class
+13:53:49 | INFO  | 🧪 Generated Test Function:
+13:53:49 | INFO  |    Function: test_the_count_words_method_of_stringprocessor_class()
+13:53:49 | INFO  |    Scenario: Test the 'count_words' method of 'StringProcessor' class
+13:53:53 | INFO  | write_test_code called with scenario: Test the 'capitalize_words' method of 'StringProcessor' class
+13:53:53 | INFO  | write_test_code returning function: test_the_capitalize_words_method_of_stringprocessor_class
+13:53:53 | INFO  | 🧪 Generated Test Function:
+13:53:53 | INFO  |    Function: test_the_capitalize_words_method_of_stringprocessor_class()
+13:53:53 | INFO  |    Scenario: Test the 'capitalize_words' method of 'StringProcessor' class
+13:53:57 | INFO  | write_test_code called with scenario: Test instantiation and basic usage of 'Calculator' class
+13:53:57 | INFO  | write_test_code returning function: test_instantiation_and_basic_usage_of_calculator_class
+13:53:57 | INFO  | 🧪 Generated Test Function:
+13:53:57 | INFO  |    Function: test_instantiation_and_basic_usage_of_calculator_class()
+13:53:57 | INFO  |    Scenario: Test instantiation and basic usage of 'Calculator' class
+13:54:01 | INFO  | write_test_code called with scenario: Test instantiation and basic usage of 'StringProcessor' class
+13:54:01 | INFO  | write_test_code returning function: test_instantiation_and_basic_usage_of_stringprocessor_class
+13:54:01 | INFO  | 🧪 Generated Test Function:
+13:54:01 | INFO  |    Function: test_instantiation_and_basic_usage_of_stringprocessor_class()
+13:54:01 | INFO  |    Scenario: Test instantiation and basic usage of 'StringProcessor' class
+13:54:16 | INFO  | ✅ Final test suite generated (153 lines)
+13:54:16 | INFO  | 📋 Generated Test Suite Content:
+13:54:16 | INFO  |     1: import pytest
+13:54:16 | INFO  |     2: from sample_code import Calculator, StringProcessor, greet, factorial, find_max, is_palindrome
+13:54:16 | INFO  |     3: 
+13:54:16 | INFO  |     4: def test_the_greet_function_with_typical_inputs():
+13:54:16 | INFO  |     5:     """
+13:54:16 | INFO  |     6:     Tests: Test the 'greet' function with typical inputs
+13:54:16 | INFO  |     7:     Expected Outcome: Should return a greeting message
+13:54:16 | INFO  |     8:     """
+13:54:16 | INFO  |     9:     assert greet("Alice") == "Hello, Alice!"
+13:54:16 | INFO  |    10: 
+13:54:16 | INFO  |    11: def test_the_greet_function_with_edge_case_inputs():
+13:54:16 | INFO  |    12:     """
+13:54:16 | INFO  |    13:     Tests: Test the 'greet' function with edge case inputs
+13:54:16 | INFO  |    14:     Expected Outcome: Should return a greeting message
+13:54:16 | INFO  |    15:     """
+13:54:16 | INFO  |    16:     assert greet("") == "Hello, stranger!"
+13:54:16 | INFO  |    17: 
+13:54:16 | INFO  |    18: def test_the_factorial_function_with_typical_inputs():
+13:54:16 | INFO  |    19:     """
+13:54:16 | INFO  |    20:     Tests: Test the 'factorial' function with typical inputs
+13:54:16 | INFO  |    21:     Expected Outcome: Should return the factorial of a number
+13:54:16 | INFO  |    22:     """
+13:54:16 | INFO  |    23:     assert factorial(5) == 120
+13:54:16 | INFO  |    24: 
+13:54:16 | INFO  |    25: def test_the_factorial_function_with_edge_case_inputs():
+13:54:16 | INFO  |    26:     """
+13:54:16 | INFO  |    27:     Tests: Test the 'factorial' function with edge case inputs
+13:54:16 | INFO  |    28:     Expected Outcome: Should raise an error for negative numbers and return 1 for 0 or 1
+13:54:16 | INFO  |    29:     """
+13:54:16 | INFO  |    30:     with pytest.raises(ValueError):
+13:54:16 | INFO  |    31:         factorial(-1)
+13:54:16 | INFO  |    32:     assert factorial(0) == 1
+13:54:16 | INFO  |    33:     assert factorial(1) == 1
+13:54:16 | INFO  |    34: 
+13:54:16 | INFO  |    35: def test_the_find_max_function_with_typical_inputs():
+13:54:16 | INFO  |    36:     """
+13:54:16 | INFO  |    37:     Tests: Test the 'find_max' function with typical inputs
+13:54:16 | INFO  |    38:     Expected Outcome: Should return the maximum number in a list
+13:54:16 | INFO  |    39:     """
+13:54:16 | INFO  |    40:     assert find_max([1, 5, 2, 8, 3]) == 8
+13:54:16 | INFO  |    41: 
+13:54:16 | INFO  |    42: def test_the_find_max_function_with_edge_case_inputs():
+13:54:16 | INFO  |    43:     """
+13:54:16 | INFO  |    44:     Tests: Test the 'find_max' function with edge case inputs
+13:54:16 | INFO  |    45:     Expected Outcome: Should raise an error for empty lists and lists with non-numeric elements
+13:54:16 | INFO  |    46:     """
+13:54:16 | INFO  |    47:     with pytest.raises(ValueError):
+13:54:16 | INFO  |    48:         find_max([])
+13:54:16 | INFO  |    49:     with pytest.raises(TypeError):
+13:54:16 | INFO  |    50:         find_max([1, "a", 3])
+13:54:16 | INFO  |    51: 
+13:54:16 | INFO  |    52: def test_the_is_palindrome_function_with_typical_inputs():
+13:54:16 | INFO  |    53:     """
+13:54:16 | INFO  |    54:     Tests: Test the 'is_palindrome' function with typical inputs
+13:54:16 | INFO  |    55:     Expected Outcome: Should return True for palindromes and False otherwise
+13:54:16 | INFO  |    56:     """
+13:54:16 | INFO  |    57:     assert is_palindrome("racecar") is True
+13:54:16 | INFO  |    58:     assert is_palindrome("hello") is False
+13:54:16 | INFO  |    59: 
+13:54:16 | INFO  |    60: def test_the_is_palindrome_function_with_edge_case_inputs():
+13:54:16 | INFO  |    61:     """
+13:54:16 | INFO  |    62:     Tests: Test the 'is_palindrome' function with edge case inputs
+13:54:16 | INFO  |    63:     Expected Outcome: Should handle non-string inputs
+13:54:16 | INFO  |    64:     """
+13:54:16 | INFO  |    65:     with pytest.raises(TypeError):
+13:54:16 | INFO  |    66:         is_palindrome(121)
+13:54:16 | INFO  |    67: 
+13:54:16 | INFO  |    68: def test_the_add_method_of_calculator_class():
+13:54:16 | INFO  |    69:     """
+13:54:16 | INFO  |    70:     Tests: Test the 'add' method of 'Calculator' class
+13:54:16 | INFO  |    71:     Expected Outcome: Should return the sum of two numbers
+13:54:16 | INFO  |    72:     """
+13:54:16 | INFO  |    73:     calculator = Calculator()
+13:54:16 | INFO  |    74:     assert calculator.add(2, 3) == 5
+13:54:16 | INFO  |    75: 
+13:54:16 | INFO  |    76: def test_the_subtract_method_of_calculator_class():
+13:54:16 | INFO  |    77:     """
+13:54:16 | INFO  |    78:     Tests: Test the 'subtract' method of 'Calculator' class
+13:54:16 | INFO  |    79:     Expected Outcome: Should return the difference of two numbers
+13:54:16 | INFO  |    80:     """
+13:54:16 | INFO  |    81:     calculator = Calculator()
+13:54:16 | INFO  |    82:     assert calculator.subtract(5, 3) == 2
+13:54:16 | INFO  |    83: 
+13:54:16 | INFO  |    84: def test_the_multiply_method_of_calculator_class():
+13:54:16 | INFO  |    85:     """
+13:54:16 | INFO  |    86:     Tests: Test the 'multiply' method of 'Calculator' class
+13:54:16 | INFO  |    87:     Expected Outcome: Should return the product of two numbers
+13:54:16 | INFO  |    88:     """
+13:54:16 | INFO  |    89:     calculator = Calculator()
+13:54:16 | INFO  |    90:     assert calculator.multiply(2, 3) == 6
+13:54:16 | INFO  |    91: 
+13:54:16 | INFO  |    92: def test_the_divide_method_of_calculator_class():
+13:54:16 | INFO  |    93:     """
+13:54:16 | INFO  |    94:     Tests: Test the 'divide' method of 'Calculator' class
+13:54:16 | INFO  |    95:     Expected Outcome: Should return the quotient of two numbers and handle division by zero
+13:54:16 | INFO  |    96:     """
+13:54:16 | INFO  |    97:     calculator = Calculator()
+13:54:16 | INFO  |    98:     assert calculator.divide(6, 3) == 2.0
+13:54:16 | INFO  |    99:     with pytest.raises(ValueError):
+13:54:16 | INFO  |    100:         calculator.divide(1, 0)
+13:54:16 | INFO  |    101: 
+13:54:16 | INFO  |    102: def test_the_power_method_of_calculator_class():
+13:54:16 | INFO  |    103:     """
+13:54:16 | INFO  |    104:     Tests: Test the 'power' method of 'Calculator' class
+13:54:16 | INFO  |    105:     Expected Outcome: Should return the power of a number and handle negative exponents
+13:54:16 | INFO  |    106:     """
+13:54:16 | INFO  |    107:     calculator = Calculator()
+13:54:16 | INFO  |    108:     assert calculator.power(2, 3) == 8
+13:54:16 | INFO  |    109:     with pytest.raises(ValueError):
+13:54:16 | INFO  |    110:         calculator.power(2, -1)
+13:54:16 | INFO  |    111: 
+13:54:16 | INFO  |    112: def test_the_reverse_string_method_of_stringprocessor_class():
+13:54:16 | INFO  |    113:     """
+13:54:16 | INFO  |    114:     Tests: Test the 'reverse_string' method of 'StringProcessor' class
+13:54:16 | INFO  |    115:     Expected Outcome: Should return the reversed string and handle non-string inputs
+13:54:16 | INFO  |    116:     """
+13:54:16 | INFO  |    117:     string_processor = StringProcessor()
+13:54:16 | INFO  |    118:     assert string_processor.reverse_string("hello") == "olleh"
+13:54:16 | INFO  |    119:     with pytest.raises(TypeError):
+13:54:16 | INFO  |    120:         string_processor.reverse_string(123)
+13:54:16 | INFO  |    121: 
+13:54:16 | INFO  |    122: def test_the_count_words_method_of_stringprocessor_class():
+13:54:16 | INFO  |    123:     """
+13:54:16 | INFO  |    124:     Tests: Test the 'count_words' method of 'StringProcessor' class
+13:54:16 | INFO  |    125:     Expected Outcome: Should return the number of words in a string and handle empty strings
+13:54:16 | INFO  |    126:     """
+13:54:16 | INFO  |    127:     string_processor = StringProcessor()
+13:54:16 | INFO  |    128:     assert string_processor.count_words("hello world") == 2
+13:54:16 | INFO  |    129:     assert string_processor.count_words("") == 0
+13:54:16 | INFO  |    130: 
+13:54:16 | INFO  |    131: def test_the_capitalize_words_method_of_stringprocessor_class():
+13:54:16 | INFO  |    132:     """
+13:54:16 | INFO  |    133:     Tests: Test the 'capitalize_words' method of 'StringProcessor' class
+13:54:16 | INFO  |    134:     Expected Outcome: Should capitalize the first letter of each word in a string
+13:54:16 | INFO  |    135:     """
+13:54:16 | INFO  |    136:     string_processor = StringProcessor()
+13:54:16 | INFO  |    137:     assert string_processor.capitalize_words("hello world") == "Hello World"
+13:54:16 | INFO  |    138: 
+13:54:16 | INFO  |    139: def test_instantiation_and_basic_usage_of_calculator_class():
+13:54:16 | INFO  |    140:     """
+13:54:16 | INFO  |    141:     Tests: Test instantiation and basic usage of 'Calculator' class
+13:54:16 | INFO  |    142:     Expected Outcome: Should create a valid instance
+13:54:16 | INFO  |    143:     """
+13:54:16 | INFO  |    144:     calculator = Calculator()
+13:54:16 | INFO  |    145:     assert calculator is not None
+13:54:16 | INFO  |    146: 
+13:54:16 | INFO  |    147: def test_instantiation_and_basic_usage_of_stringprocessor_class():
+13:54:16 | INFO  |    148:     """
+13:54:16 | INFO  |    149:     Tests: Test instantiation and basic usage of 'StringProcessor' class
+13:54:16 | INFO  |    150:     Expected Outcome: Should create a valid instance
+13:54:16 | INFO  |    151:     """
+13:54:16 | INFO  |    152:     string_processor = StringProcessor()
+13:54:16 | INFO  |    153:     assert string_processor is not None
+13:54:26 | INFO  | Starting selective test execution
+13:54:26 | INFO  | 🔧 Preparing to execute selective tests...
+13:54:26 | INFO  | [1/3] Executing 18 test cases...
+13:54:27 | INFO  | [2/3] Test execution completed, parsing results...
+13:54:27 | INFO  | [3/3] ✅ Selective test execution completed
+13:54:35 | INFO  | Parsing selective test execution results
+13:54:35 | INFO  | Selective execution results: 18/18 tests passed
+13:54:35 | INFO  | 🧪 Test Execution Details:
+13:54:35 | INFO  |    Total Tests: 18
+13:54:35 | INFO  |    ✅ Passed: 18
+13:54:35 | INFO  |    ❌ Failed: 0
+13:54:35 | INFO  |    📊 Success Rate: 100.0%
+13:54:35 | INFO  | 📋 Individual Test Results:
+13:54:35 | INFO  |    ✅  (0.000s)
+13:54:35 | INFO  |    ✅  (0.000s)
+13:54:35 | INFO  |    ✅  (0.000s)
+13:54:35 | INFO  |    ✅  (0.000s)
+13:54:35 | INFO  |    ✅  (0.000s)
+13:54:35 | INFO  |    ✅  (0.000s)
+13:54:35 | INFO  |    ✅  (0.000s)
+13:54:35 | INFO  |    ✅  (0.000s)
+13:54:35 | INFO  |    ✅  (0.000s)
+13:54:35 | INFO  |    ✅  (0.000s)
+13:54:35 | INFO  |    ✅  (0.000s)
+13:54:35 | INFO  |    ✅  (0.000s)
+13:54:35 | INFO  |    ✅  (0.000s)
+13:54:35 | INFO  |    ✅  (0.000s)
+13:54:35 | INFO  |    ✅  (0.000s)
+13:54:35 | INFO  |    ✅  (0.000s)
+13:54:35 | INFO  |    ✅  (0.000s)
+13:54:35 | INFO  |    ✅  (0.000s)
+13:55:06 | INFO  | Generating comprehensive test report
+13:55:06 | INFO  | Generated comprehensive report. Overall score: 40.0%
+13:55:12 | INFO  | Formatting report as markdown
+13:55:36 | INFO  | ✅ Final test suite generated (153 lines)
+13:55:36 | INFO  | 📋 Generated Test Suite Content:
+13:55:36 | INFO  |     1: import pytest
+13:55:36 | INFO  |     2: from sample_code import Calculator, StringProcessor, greet, factorial, find_max, is_palindrome
+13:55:36 | INFO  |     3: 
+13:55:36 | INFO  |     4: def test_the_greet_function_with_typical_inputs():
+13:55:36 | INFO  |     5:     """
+13:55:36 | INFO  |     6:     Tests: Test the 'greet' function with typical inputs
+13:55:36 | INFO  |     7:     Expected Outcome: Should return a greeting message
+13:55:36 | INFO  |     8:     """
+13:55:36 | INFO  |     9:     assert greet("Alice") == "Hello, Alice!"
+13:55:36 | INFO  |    10: 
+13:55:36 | INFO  |    11: def test_the_greet_function_with_edge_case_inputs():
+13:55:36 | INFO  |    12:     """
+13:55:36 | INFO  |    13:     Tests: Test the 'greet' function with edge case inputs
+13:55:36 | INFO  |    14:     Expected Outcome: Should return a greeting message
+13:55:36 | INFO  |    15:     """
+13:55:36 | INFO  |    16:     assert greet("") == "Hello, stranger!"
+13:55:36 | INFO  |    17: 
+13:55:36 | INFO  |    18: def test_the_factorial_function_with_typical_inputs():
+13:55:36 | INFO  |    19:     """
+13:55:36 | INFO  |    20:     Tests: Test the 'factorial' function with typical inputs
+13:55:36 | INFO  |    21:     Expected Outcome: Should return the factorial of a number
+13:55:36 | INFO  |    22:     """
+13:55:36 | INFO  |    23:     assert factorial(5) == 120
+13:55:36 | INFO  |    24: 
+13:55:36 | INFO  |    25: def test_the_factorial_function_with_edge_case_inputs():
+13:55:36 | INFO  |    26:     """
+13:55:36 | INFO  |    27:     Tests: Test the 'factorial' function with edge case inputs
+13:55:36 | INFO  |    28:     Expected Outcome: Should raise an error for negative numbers and return 1 for 0 or 1
+13:55:36 | INFO  |    29:     """
+13:55:36 | INFO  |    30:     with pytest.raises(ValueError):
+13:55:36 | INFO  |    31:         factorial(-1)
+13:55:36 | INFO  |    32:     assert factorial(0) == 1
+13:55:36 | INFO  |    33:     assert factorial(1) == 1
+13:55:36 | INFO  |    34: 
+13:55:36 | INFO  |    35: def test_the_find_max_function_with_typical_inputs():
+13:55:36 | INFO  |    36:     """
+13:55:36 | INFO  |    37:     Tests: Test the 'find_max' function with typical inputs
+13:55:36 | INFO  |    38:     Expected Outcome: Should return the maximum number in a list
+13:55:36 | INFO  |    39:     """
+13:55:36 | INFO  |    40:     assert find_max([1, 5, 2, 8, 3]) == 8
+13:55:36 | INFO  |    41: 
+13:55:36 | INFO  |    42: def test_the_find_max_function_with_edge_case_inputs():
+13:55:36 | INFO  |    43:     """
+13:55:36 | INFO  |    44:     Tests: Test the 'find_max' function with edge case inputs
+13:55:36 | INFO  |    45:     Expected Outcome: Should raise an error for empty lists and lists with non-numeric elements
+13:55:36 | INFO  |    46:     """
+13:55:36 | INFO  |    47:     with pytest.raises(ValueError):
+13:55:36 | INFO  |    48:         find_max([])
+13:55:36 | INFO  |    49:     with pytest.raises(TypeError):
+13:55:36 | INFO  |    50:         find_max([1, "a", 3])
+13:55:36 | INFO  |    51: 
+13:55:36 | INFO  |    52: def test_the_is_palindrome_function_with_typical_inputs():
+13:55:36 | INFO  |    53:     """
+13:55:36 | INFO  |    54:     Tests: Test the 'is_palindrome' function with typical inputs
+13:55:36 | INFO  |    55:     Expected Outcome: Should return True for palindromes and False otherwise
+13:55:36 | INFO  |    56:     """
+13:55:36 | INFO  |    57:     assert is_palindrome("racecar") is True
+13:55:36 | INFO  |    58:     assert is_palindrome("hello") is False
+13:55:36 | INFO  |    59: 
+13:55:36 | INFO  |    60: def test_the_is_palindrome_function_with_edge_case_inputs():
+13:55:36 | INFO  |    61:     """
+13:55:36 | INFO  |    62:     Tests: Test the 'is_palindrome' function with edge case inputs
+13:55:36 | INFO  |    63:     Expected Outcome: Should handle non-string inputs
+13:55:36 | INFO  |    64:     """
+13:55:36 | INFO  |    65:     with pytest.raises(TypeError):
+13:55:36 | INFO  |    66:         is_palindrome(121)
+13:55:36 | INFO  |    67: 
+13:55:36 | INFO  |    68: def test_the_add_method_of_calculator_class():
+13:55:36 | INFO  |    69:     """
+13:55:36 | INFO  |    70:     Tests: Test the 'add' method of 'Calculator' class
+13:55:36 | INFO  |    71:     Expected Outcome: Should return the sum of two numbers
+13:55:36 | INFO  |    72:     """
+13:55:36 | INFO  |    73:     calculator = Calculator()
+13:55:36 | INFO  |    74:     assert calculator.add(2, 3) == 5
+13:55:36 | INFO  |    75: 
+13:55:36 | INFO  |    76: def test_the_subtract_method_of_calculator_class():
+13:55:36 | INFO  |    77:     """
+13:55:36 | INFO  |    78:     Tests: Test the 'subtract' method of 'Calculator' class
+13:55:36 | INFO  |    79:     Expected Outcome: Should return the difference of two numbers
+13:55:36 | INFO  |    80:     """
+13:55:36 | INFO  |    81:     calculator = Calculator()
+13:55:36 | INFO  |    82:     assert calculator.subtract(5, 3) == 2
+13:55:36 | INFO  |    83: 
+13:55:36 | INFO  |    84: def test_the_multiply_method_of_calculator_class():
+13:55:36 | INFO  |    85:     """
+13:55:36 | INFO  |    86:     Tests: Test the 'multiply' method of 'Calculator' class
+13:55:36 | INFO  |    87:     Expected Outcome: Should return the product of two numbers
+13:55:36 | INFO  |    88:     """
+13:55:36 | INFO  |    89:     calculator = Calculator()
+13:55:36 | INFO  |    90:     assert calculator.multiply(2, 3) == 6
+13:55:36 | INFO  |    91: 
+13:55:36 | INFO  |    92: def test_the_divide_method_of_calculator_class():
+13:55:36 | INFO  |    93:     """
+13:55:36 | INFO  |    94:     Tests: Test the 'divide' method of 'Calculator' class
+13:55:36 | INFO  |    95:     Expected Outcome: Should return the quotient of two numbers and handle division by zero
+13:55:36 | INFO  |    96:     """
+13:55:36 | INFO  |    97:     calculator = Calculator()
+13:55:36 | INFO  |    98:     assert calculator.divide(6, 3) == 2.0
+13:55:36 | INFO  |    99:     with pytest.raises(ValueError):
+13:55:36 | INFO  |    100:         calculator.divide(1, 0)
+13:55:36 | INFO  |    101: 
+13:55:36 | INFO  |    102: def test_the_power_method_of_calculator_class():
+13:55:36 | INFO  |    103:     """
+13:55:36 | INFO  |    104:     Tests: Test the 'power' method of 'Calculator' class
+13:55:36 | INFO  |    105:     Expected Outcome: Should return the power of a number and handle negative exponents
+13:55:36 | INFO  |    106:     """
+13:55:36 | INFO  |    107:     calculator = Calculator()
+13:55:36 | INFO  |    108:     assert calculator.power(2, 3) == 8
+13:55:36 | INFO  |    109:     with pytest.raises(ValueError):
+13:55:36 | INFO  |    110:         calculator.power(2, -1)
+13:55:36 | INFO  |    111: 
+13:55:36 | INFO  |    112: def test_the_reverse_string_method_of_stringprocessor_class():
+13:55:36 | INFO  |    113:     """
+13:55:36 | INFO  |    114:     Tests: Test the 'reverse_string' method of 'StringProcessor' class
+13:55:36 | INFO  |    115:     Expected Outcome: Should return the reversed string and handle non-string inputs
+13:55:36 | INFO  |    116:     """
+13:55:36 | INFO  |    117:     string_processor = StringProcessor()
+13:55:36 | INFO  |    118:     assert string_processor.reverse_string("hello") == "olleh"
+13:55:36 | INFO  |    119:     with pytest.raises(TypeError):
+13:55:36 | INFO  |    120:         string_processor.reverse_string(123)
+13:55:36 | INFO  |    121: 
+13:55:36 | INFO  |    122: def test_the_count_words_method_of_stringprocessor_class():
+13:55:36 | INFO  |    123:     """
+13:55:36 | INFO  |    124:     Tests: Test the 'count_words' method of 'StringProcessor' class
+13:55:36 | INFO  |    125:     Expected Outcome: Should return the number of words in a string and handle empty strings
+13:55:36 | INFO  |    126:     """
+13:55:36 | INFO  |    127:     string_processor = StringProcessor()
+13:55:36 | INFO  |    128:     assert string_processor.count_words("hello world") == 2
+13:55:36 | INFO  |    129:     assert string_processor.count_words("") == 0
+13:55:36 | INFO  |    130: 
+13:55:36 | INFO  |    131: def test_the_capitalize_words_method_of_stringprocessor_class():
+13:55:36 | INFO  |    132:     """
+13:55:36 | INFO  |    133:     Tests: Test the 'capitalize_words' method of 'StringProcessor' class
+13:55:36 | INFO  |    134:     Expected Outcome: Should capitalize the first letter of each word in a string
+13:55:36 | INFO  |    135:     """
+13:55:36 | INFO  |    136:     string_processor = StringProcessor()
+13:55:36 | INFO  |    137:     assert string_processor.capitalize_words("hello world") == "Hello World"
+13:55:36 | INFO  |    138: 
+13:55:36 | INFO  |    139: def test_instantiation_and_basic_usage_of_calculator_class():
+13:55:36 | INFO  |    140:     """
+13:55:36 | INFO  |    141:     Tests: Test instantiation and basic usage of 'Calculator' class
+13:55:36 | INFO  |    142:     Expected Outcome: Should create a valid instance
+13:55:36 | INFO  |    143:     """
+13:55:36 | INFO  |    144:     calculator = Calculator()
+13:55:36 | INFO  |    145:     assert calculator is not None
+13:55:36 | INFO  |    146: 
+13:55:36 | INFO  |    147: def test_instantiation_and_basic_usage_of_stringprocessor_class():
+13:55:36 | INFO  |    148:     """
+13:55:36 | INFO  |    149:     Tests: Test instantiation and basic usage of 'StringProcessor' class
+13:55:36 | INFO  |    150:     Expected Outcome: Should create a valid instance
+13:55:36 | INFO  |    151:     """
+13:55:36 | INFO  |    152:     string_processor = StringProcessor()
+13:55:36 | INFO  |    153:     assert string_processor is not None
+13:55:36 | INFO  | 📋 Execution report saved to: reports/test_execution_report_20250924_135214.md

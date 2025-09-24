@@ -8,6 +8,7 @@ class CodeVisitor(ast.NodeVisitor):
     """
     def __init__(self):
         self.structure: List[Dict[str, Any]] = []
+        self._class_stack = []  # Track nested classes
 
     def visit_ClassDef(self, node: ast.ClassDef):
         """Called when the visitor finds a class definition."""
@@ -18,6 +19,9 @@ class CodeVisitor(ast.NodeVisitor):
             "methods": []
         }
         
+        # Add to class stack to track we're inside a class
+        self._class_stack.append(node.name)
+        
         # Iterate through the body of the class to find method definitions
         for item in node.body:
             if isinstance(item, ast.FunctionDef):
@@ -25,22 +29,20 @@ class CodeVisitor(ast.NodeVisitor):
                 class_info["methods"].append(method_info)
         
         self.structure.append(class_info)
-        # We don't call generic_visit here to avoid visiting methods twice.
+        
+        # Remove from class stack when leaving the class
+        self._class_stack.pop()
 
     def visit_FunctionDef(self, node: ast.FunctionDef):
         """
-        Called when the visitor finds a function definition at the top level.
-        It ignores methods inside classes, which are handled by visit_ClassDef.
+        Called when the visitor finds a function definition.
+        Only processes top-level functions (not methods inside classes).
         """
-        # We check if the function's parent is a Module, which means it's a top-level function.
-        # This requires walking the tree with parent pointers or a simpler check.
-        # For simplicity here, we'll assume the main function will call this for top-level nodes.
-        # A more robust implementation would track the parent node.
-        # Let's assume the main function logic prevents double-counting for now.
-        if not any(isinstance(parent, ast.ClassDef) for parent in getattr(node, 'parents', [])):
-             func_info = self._get_function_details(node)
-             func_info["type"] = "function"
-             self.structure.append(func_info)
+        # Only add functions that are not inside any class
+        if not self._class_stack:
+            func_info = self._get_function_details(node)
+            func_info["type"] = "function"
+            self.structure.append(func_info)
 
     def _get_function_details(self, node: ast.FunctionDef) -> Dict[str, Any]:
         """Helper to extract details from any function or method node."""

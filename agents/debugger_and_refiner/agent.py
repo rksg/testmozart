@@ -5,7 +5,7 @@ the generated test code.
 """
 
 from google.adk.agents import LlmAgent
-from agents.debugger_and_refiner.tools import exit_loop
+from .tools import exit_loop
 
 
 def create_debugger_and_refiner_agent() -> LlmAgent:
@@ -32,8 +32,10 @@ def create_debugger_and_refiner_agent() -> LlmAgent:
 
         **CRITICAL INSTRUCTIONS:**
         -   Your output MUST be only the complete, corrected Python test code.
-        -   Ensure the corrected code includes the necessary imports to run, such as `import pytest` and importing the code under test from `source_to_test` (e.g., `from source_to_test import YourClass, your_function`).
-        -   Do NOT include any explanations, apologies, comments about your changes, or markdown formatting like ```python.
+        -   Ensure the corrected code includes the necessary imports to run, such as `import pytest` and importing the code under test from `sample_code` (e.g., `from sample_code import YourClass, your_function`).
+        -   Do NOT include any explanations, apologies, comments about your changes, or markdown formatting like ```python or ```.
+        -   Do NOT wrap the code in any markdown code blocks or formatting.
+        -   Your response should start directly with Python code (import statements).
         -   Ensure the corrected code is a single, complete, and syntactically valid Python script.
         -   Preserve the parts of the test file that were correct and only modify what is necessary to fix the failures.
         """,

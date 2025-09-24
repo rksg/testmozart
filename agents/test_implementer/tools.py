@@ -1,5 +1,8 @@
 import re
+import logging
 from typing import Dict, Any
+
+logger = logging.getLogger("two_stage_system")
 
 def _sanitize_for_function_name(description: str) -> str:
     """Converts a natural language description into a valid Python function name."""
@@ -29,8 +32,12 @@ def write_test_code(test_scenario: Dict[str, Any], target_framework: str) -> str
     Returns:
         A string containing the boilerplate Python test code.
     """
+    logger.info(f"write_test_code called with scenario: {test_scenario.get('description', 'No description')}")
+    
     if target_framework.lower() != 'pytest':
-        return f"# Error: Unsupported framework '{target_framework}'. Only 'pytest' is supported."
+        error_msg = f"# Error: Unsupported framework '{target_framework}'. Only 'pytest' is supported."
+        logger.warning(error_msg)
+        return error_msg
 
     description = test_scenario.get('description', 'No description provided')
     expected_outcome = test_scenario.get('expected_outcome', 'No expected outcome provided')
@@ -50,4 +57,12 @@ def {function_name}():
     # TODO: Implement the test logic and assertion here.
     ...
 '''
-    return code_template.strip()
+    result = code_template.strip()
+    logger.info(f"write_test_code returning function: {function_name}")
+    
+    # Log the generated test code details (simplified)
+    logger.info("🧪 Generated Test Function:")
+    logger.info(f"   Function: {function_name}()")
+    logger.info(f"   Scenario: {description}")
+    
+    return result

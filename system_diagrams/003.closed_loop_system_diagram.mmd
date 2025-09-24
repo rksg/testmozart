@@ -1,0 +1,104 @@
+graph TB
+    %% Closed-Loop Feedback System Architecture
+    %% This diagram shows the enhanced system with iterative quality improvement
+    
+    subgraph "Input Layer"
+        INPUT[Source Code Input]
+    end
+    
+    subgraph "Initial Analysis Phase"
+        CA[Code Analyzer<br/>📊 AST Analysis<br/>Function/Class Detection]
+    end
+    
+    subgraph "Quality-Driven Design Loop" 
+        subgraph "Iteration Control"
+            QC{Quality Check<br/>Coverage ≥ 80%?<br/>Success ≥ 95%?<br/>Quality ≥ 90%?}
+            IC[Iteration Counter<br/>Max: 3 iterations]
+        end
+        
+        subgraph "Design & Analysis"
+            ETCD[Enhanced Test Designer<br/>🧠 MODE 1: Initial Design<br/>🔄 MODE 2: Improvement<br/>Feedback-Driven Scenarios]
+            COV[Coverage Analyzer<br/>📈 AST-Based Coverage<br/>Gap Identification]
+        end
+        
+        subgraph "Implementation & Testing"
+            TI[Test Implementer<br/>🏗️ Pytest Code Generation<br/>Framework Integration]
+            TR1[Test Runner<br/>🚀 Sandboxed Execution<br/>Result Collection]
+        end
+        
+        subgraph "Feedback Generation"
+            FA[Feedback Analyzer<br/>🔍 Gap Analysis<br/>LLM-Friendly Instructions<br/>Priority Classification]
+            QL[Quality Loop Manager<br/>⚖️ Threshold Evaluation<br/>Continue/Exit Decision]
+        end
+    end
+    
+    subgraph "Execution Refinement Loop"
+        TR2[Execution Test Runner<br/>🔧 Final Execution<br/>Error Detection]
+        DR[Debugger & Refiner<br/>🛠️ Syntax Error Fixes<br/>Execution Issue Resolution]
+        EC{Tests Pass?}
+    end
+    
+    subgraph "Final Reporting"
+        RG[Report Generator<br/>📊 Comprehensive Analysis<br/>Multi-Format Output]
+        RS[Result Summarizer<br/>📋 Executive Summary<br/>Key Insights]
+    end
+    
+    subgraph "Output Layer"
+        OUTPUT1[Final Test Suite<br/>output/final_test_suite.py]
+        OUTPUT2[Quality Reports<br/>output/comprehensive_report.json<br/>output/analysis_report.md]
+        OUTPUT3[System Logs<br/>logs/test_generation_*.log]
+    end
+    
+    %% Flow connections
+    INPUT --> CA
+    CA --> ETCD
+    
+    %% Quality-driven design loop flow
+    ETCD --> COV
+    COV --> TI
+    TI --> TR1
+    TR1 --> FA
+    FA --> QL
+    QL --> QC
+    QC -->|Quality Standards Met| TR2
+    QC -->|Needs Improvement| IC
+    IC -->|Continue Iteration| ETCD
+    IC -->|Max Iterations Reached| TR2
+    
+    %% Execution refinement loop
+    TR2 --> EC
+    EC -->|Tests Fail| DR
+    DR --> TR2
+    EC -->|Tests Pass| RG
+    
+    %% Final reporting
+    RG --> RS
+    RS --> OUTPUT1
+    RS --> OUTPUT2
+    RS --> OUTPUT3
+    
+    %% Feedback loop styling
+    QL -.->|Improvement Instructions| ETCD
+    FA -.->|Coverage Gaps & Issues| ETCD
+    
+    %% State sharing (dotted lines)
+    CA -.->|Static Analysis| ETCD
+    COV -.->|Coverage Report| FA
+    TR1 -.->|Test Results| FA
+    
+    %% Styling
+    classDef inputOutput fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef analysis fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef design fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+    classDef execution fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef feedback fill:#ffebee,stroke:#c62828,stroke-width:2px
+    classDef control fill:#f1f8e9,stroke:#33691e,stroke-width:2px
+    classDef reporting fill:#fce4ec,stroke:#880e4f,stroke-width:2px
+    
+    class INPUT,OUTPUT1,OUTPUT2,OUTPUT3 inputOutput
+    class CA,COV analysis
+    class ETCD,TI design
+    class TR1,TR2,DR,EC execution
+    class FA,QL feedback
+    class QC,IC control
+    class RG,RS reporting
