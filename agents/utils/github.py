@@ -31,7 +31,7 @@ def get_changed_file_from_pr(pr_url: str):
     local_path = os.path.join(tempfile.gettempdir(), repo_full)
     print(repo_full, local_path)
     if not os.path.exists(local_path):
-        subprocess.run(["git", "clone", f"https://rsa-builder:{os.getenv("GITHUB_TOKEN")}@github.com/{repo_full}", local_path], check=True)
+        subprocess.run(["git", "clone", f"https://rsa-builder:{os.getenv('GITHUB_TOKEN')}@github.com/{repo_full}", local_path], check=True)
     subprocess.run(["git", "fetch"],cwd=local_path,check=True)
     subprocess.run(["git", "checkout", branch],cwd=local_path,check=True)
     subprocess.run(["git", "pull"],cwd=local_path,check=True)
@@ -51,11 +51,11 @@ def push_to_github(pr_url: str):
     local_path = os.path.join(tempfile.gettempdir(), repo_full)
     subprocess.run(["git", "add", "."],cwd=local_path,check=True)
     subprocess.run(["git", "commit", "-m", "from agent"],cwd=local_path,check=True)
-    subprocess.run(["git", "push", "-u", f"https://rsa-builder:{os.getenv("GITHUB_TOKEN")}@github.com/{repo_full}", branch],cwd=local_path,check=True)
+    subprocess.run(["git", "push", "-u", f"https://rsa-builder:{os.getenv('GITHUB_TOKEN')}@github.com/{repo_full}", branch],cwd=local_path,check=True)
 
 if __name__ == "__main__":
   pr = "https://github.com/rksg/mlisa-ai/pull/135"
-  files = get_changed_files_from_pr(pr)
+  files = get_changed_file_from_pr(pr)
   print(files)
   with open(files[0], 'a') as file:
     file.write("# test change.\n")

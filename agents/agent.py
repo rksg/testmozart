@@ -35,26 +35,42 @@ logger = logging.getLogger("two_stage_system")
 def save_source_load_to_local(callback_context: CallbackContext):
     from .utils.gcs_bucket import get_file_from_gcs
     from .utils.github import get_changed_file_from_pr
+    import os
+    import tempfile
+    from urllib.parse import urlparse
     """Saves the source code from GCS or GitHub to local state and filesystem."""
     user_content = callback_context.user_content
     if user_content and user_content.parts:
         try:
             text = user_content.parts[0].text
-            if re.match(r'^gs://', text):
-                gcs_url = user_content.parts[0].text.strip()
-                source_code = get_file_from_gcs(gcs_url)
-                callback_context.state['source_code_path'] = source_code
-                callback_context.state['language'] = 'python'
-                logger.info(f"Loaded source code from GCS URL: {gcs_url}")
-            elif re.match(r'^https://github\.com/[^/]+/[^/]+/pull/\d+$', text):
-                pr_url = user_content.parts[0].text.strip()
-                source_code = get_changed_file_from_pr(pr_url)
-                callback_context.state['source_code_path'] = source_code
-                callback_context.state['language'] = 'python'
-                logger.info(f"Downloaded source code from GitHub PR: {pr_url}")
-            else:
-                initial_data = json.loads(user_content.parts[0].text)
-                callback_context.state['language'] = initial_data.get('language')
+            if text:
+                if re.match(r'^gs://', text):
+                    gcs_url = text.strip()
+                    source_code = get_file_from_gcs(gcs_url)
+                    callback_context.state['source_code_path'] = source_code
+                    callback_context.state['language'] = 'python'
+                    logger.info(f"Loaded source code from GCS URL: {gcs_url}")
+                elif re.match(r'^https://github\.com/[^/]+/[^/]+/pull/\d+$', text):
+                    pr_url = text.strip()
+                    source_code = get_changed_file_from_pr(pr_url)
+                    callback_context.state['source_code_path'] = source_code
+                    callback_context.state['language'] = 'python'
+                    # Store PR URL and project directory for later use
+                    callback_context.state['pr_url'] = pr_url
+                    # Extract project directory from source code path
+                    if source_code and len(source_code) > 0:
+                        source_file_path = source_code[0]
+                        project_dir = os.path.dirname(source_file_path)
+                        callback_context.state['project_directory'] = project_dir
+                        filename_without_ext = os.path.splitext(os.path.basename(source_file_path))[0]
+                        callback_context.state['test_filename'] = filename_without_ext + "_test.py"
+                    logger.info(f"Downloaded source code from GitHub PR: {pr_url}")
+                else:
+                    initial_data = json.loads(text)
+                    callback_context.state['language'] = initial_data.get('language')
+                    # Set source_code_path from the provided source_code
+                    if 'source_code' in initial_data:
+                        callback_context.state['source_code_path'] = initial_data['source_code']
         except (json.JSONDecodeError, AttributeError):
             logger.warning("Could not parse initial JSON request. Treating content as raw source code.")
             callback_context.state['language'] = 'python'
@@ -91,6 +107,7 @@ def initialize_two_stage_state(callback_context: CallbackContext):
             callback_context.state[key] = default_value
 
     logger.info("Two-stage architecture state initialized")
+    print(f"Initialized state: {callback_context.state.to_dict()}")
 
 
 def save_analysis_to_state(tool: BaseTool, args: dict, tool_context: ToolContext, tool_response: dict):
@@ -130,7 +147,7 @@ selective_test_runner_agent.instruction += "\n\nYou will receive the test suite 
 # Configure final reporting agents (reused from existing system)
 report_generator_agent.instruction += "\n\nYou will receive coverage report in `{coverage_validation_result}`, test results in `{selective_test_results}`, source code in `{source_code_path}`, and generated test code in `{generated_test_code}`."
 
-result_summarizer_agent.instruction += "\n\nYou will receive the comprehensive report in `{comprehensive_report}` and final test suite in `{generated_test_code}`."
+# result_summarizer_agent.instruction += "\n\nYou will receive the comprehensive report in `{comprehensive_report}` and final test suite in `{generated_test_code}`."
 
 # --- Stage 1: Coverage Optimization Loop ---
 

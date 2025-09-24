@@ -1,6 +1,6 @@
 """Code Analyzer Agent
 
-This agent performs deep, accurate static analysis of source code by parsing it 
+This agent performs deep, accurate static analysis of source code by parsing it
 into a structured format using AST analysis.
 """
 
