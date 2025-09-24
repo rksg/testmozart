@@ -51,7 +51,7 @@ async def main():
         parts=[types.Part(text=initial_request)]
     )
 
-    # 5. Run the agent system and stream the process
+    # 5. Run the agent system and stream the processes
     final_output = ""
     print("\n--- SYSTEM EXECUTION LOG ---")
     async for event in runner.run_async(
