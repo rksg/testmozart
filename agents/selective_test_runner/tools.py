@@ -11,7 +11,7 @@ import subprocess
 import json
 import re
 from typing import Dict, List, Any, Optional
-
+import sys 
 logger = logging.getLogger("two_stage_system")
 
 def execute_selective_tests(
@@ -42,7 +42,76 @@ def execute_selective_tests(
         source_file = os.path.join(temp_dir, "sample_code.py")
         with open(source_file, "w") as f:
             f.write(source_code)
+
+        req_file = os.path.join(temp_dir, "requirements.txt")
+
+        with open(req_file, "w") as f:
+            f.write("pytest\n")
+            f.write("sqlglot\n")
+            f.write("langgraph\n")
+            f.write("pydantic\n")
+            f.write("langchain\n")
+        # --- 2. Create a virtual environment ---
+        print("Creating virtual environment...", 2, 5)
+        venv_path = os.path.join(temp_dir, "venv")
+        try:
+            # Use the currently running Python executable to create the venv
+            subprocess.run(
+                [sys.executable, "-m", "venv", venv_path], 
+                check=True, 
+                capture_output=True,
+                text=True
+            )
+        except subprocess.CalledProcessError as e:
+            return {
+                "exit_code": e.returncode,
+                "stdout": e.stdout,
+                "stderr": f"Failed to create virtual environment:\n{e.stderr}"
+            }            
+        # --- 3. Determine platform-specific executable paths ---
+        if os.name == 'nt':  # Windows
+            bin_dir = "Scripts"
+        else:  # macOS, Linux, etc.
+            bin_dir = "bin"
+            
+        pip_exe = os.path.join(venv_path, bin_dir, "pip")
+        pytest_exe = os.path.join(venv_path, bin_dir, "pytest")
         
+        # --- 2. Create a virtual environment ---
+        print("Creating virtual environment...", 2, 5)
+        venv_path = os.path.join(temp_dir, "venv")
+        try:
+            # Use the currently running Python executable to create the venv
+            subprocess.run(
+                [sys.executable, "-m", "venv", venv_path], 
+                check=True, 
+                capture_output=True,
+                text=True
+            )
+            
+        except subprocess.CalledProcessError as e:
+            return {
+                "exit_code": e.returncode,
+                "stdout": e.stdout,
+                "stderr": f"Failed to create virtual environment:\n{e.stderr}"
+            }
+        # --- 4. Install requirements into the venv ---
+        print("Installing test dependencies (pytest)...", 3, 5)
+        try:
+            subprocess.run(
+                [pip_exe, "install", "-r", req_file],
+                check=True,
+                capture_output=True,
+                text=True,
+                cwd=temp_dir
+            )
+        except subprocess.CalledProcessError as e:
+            return {
+                "exit_code": e.returncode,
+                "stdout": e.stdout,
+                "stderr": f"Failed to install pytest:\n{e.stderr}"
+            }   
+        # Install required packages
         # Write test code to file
         test_file = os.path.join(temp_dir, "test_selective.py")
         with open(test_file, "w") as f:
