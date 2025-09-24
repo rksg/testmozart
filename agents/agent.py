@@ -128,7 +128,7 @@ incremental_test_implementer_agent.instruction += "\n\nYou will receive the test
 selective_test_runner_agent.instruction += "\n\nYou will receive the test suite in the `{generated_test_code}` state variable and source code in the path `{source_code_path}`, use read_file_as_string tool to get the source code."
 
 # Configure final reporting agents (reused from existing system)
-report_generator_agent.instruction += "\n\nYou will receive coverage report in `{coverage_validation_result}`, test results in `{selective_test_results}`, source code in `{source_code}`, and generated test code in `{generated_test_code}`."
+report_generator_agent.instruction += "\n\nYou will receive coverage report in `{coverage_validation_result}`, test results in `{selective_test_results}`, source code in `{source_code_path}`, and generated test code in `{generated_test_code}`."
 
 result_summarizer_agent.instruction += "\n\nYou will receive the comprehensive report in `{comprehensive_report}` and final test suite in `{generated_test_code}`."
 
