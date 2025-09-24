@@ -115,6 +115,7 @@ def execute_tests_sandboxed(source_code_under_test: str, generated_test_code: st
 
         with open(req_path, "w") as f:
             f.write("pytest\n")
+            f.write("sqlglot\n")
 
         # --- 2. Create a virtual environment ---
         _print_progress("Creating virtual environment...", 2, 5)
