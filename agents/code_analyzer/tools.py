@@ -76,6 +76,7 @@ def analyze_code_structure(source_code: str, language: str) -> Dict[str, Any]:
     """
     if language.lower() == 'python':
         try:
+            print(f"Analyzing Python code structure...{source_code[:500]}...")  # Print first 30 chars for context
             tree = ast.parse(source_code)
             visitor = CodeVisitor()
             visitor.visit(tree)

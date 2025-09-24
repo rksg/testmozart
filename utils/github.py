@@ -20,7 +20,7 @@ def get_branch_from_pr(pr_url: str) -> str:
         pr_data = json.loads(response.read().decode())
         return pr_data["head"]["ref"]
 
-def get_changed_files_from_pr(pr_url: str):
+def get_changed_file_from_pr(pr_url: str):
     parsed = urlparse(pr_url)
     parts = parsed.path.strip("/").split("/")
     if len(parts) < 4 or parts[-2] != "pull":
@@ -38,7 +38,7 @@ def get_changed_files_from_pr(pr_url: str):
     base = "origin/master"
     merge_base = subprocess.check_output(["git", "merge-base", base, branch],cwd=local_path,text=True).strip()
     changed_files = subprocess.check_output(["git", "diff", "--name-only", merge_base, branch],cwd=local_path,text=True).splitlines()
-    return [os.path.join(local_path, filename) for filename in changed_files]
+    return [[os.path.join(local_path, filename) for filename in changed_files][0]]
 
 def push_to_github(pr_url: str):
     parsed = urlparse(pr_url)

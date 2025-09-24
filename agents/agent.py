@@ -11,7 +11,6 @@ from google.adk.agents.callback_context import CallbackContext
 from google.adk.tools.tool_context import ToolContext
 from google.adk.tools.base_tool import BaseTool
 from google.genai import types
-from utils.github import get_changed_files_from_pr
 
 # Import agent creation functions to avoid sharing agent instances
 from .code_analyzer.agent import create_code_analyzer_agent
@@ -33,37 +32,35 @@ from .config import COVERAGE_MAX_ITERATIONS, EXECUTION_MAX_ITERATIONS
 
 logger = logging.getLogger("two_stage_system")
 
+def save_source_load_to_local(callback_context: CallbackContext):
+    from utils.gcs_bucket import get_file_from_gcs
+    from utils.github import get_changed_file_from_pr
+    """Saves the source code from GCS or GitHub to local state and filesystem."""
+    user_content = callback_context.user_content
+    if user_content and user_content.parts:
+        try:
+            text = user_content.parts[0].text
+            if re.match(r'^gs://', text):
+                gcs_url = user_content.parts[0].text.strip()
+                source_code = get_file_from_gcs(gcs_url)
+                callback_context.state['source_code_path'] = source_code
+                callback_context.state['language'] = 'python'
+                logger.info(f"Loaded source code from GCS URL: {gcs_url}")
+            elif re.match(r'^https://github\.com/[^/]+/[^/]+/pull/\d+$', text):
+                pr_url = user_content.parts[0].text.strip()
+                source_code = get_changed_file_from_pr(pr_url)
+                callback_context.state['source_code_path'] = source_code
+                callback_context.state['language'] = 'python'
+                logger.info(f"Downloaded source code from GitHub PR: {pr_url}")
+            else:
+                initial_data = json.loads(user_content.parts[0].text)
+                callback_context.state['language'] = initial_data.get('language')
+        except (json.JSONDecodeError, AttributeError):
+            logger.warning("Could not parse initial JSON request. Treating content as raw source code.")
+            callback_context.state['language'] = 'python'
 
 def initialize_two_stage_state(callback_context: CallbackContext):
     """Initialize state for the two-stage architecture."""
-    user_content = callback_context.user_content
-    if user_content and user_content.parts:
-        text = user_content.parts[0].text
-        if text and re.match(r'^https://github\.com/[^/]+/[^/]+/pull/\d+$', text):
-            try:
-                changed_files = get_changed_files_from_pr(text)
-                if changed_files:
-                    # Read the first changed file
-                    with open(changed_files[0], 'r', encoding='utf-8') as f:
-                        callback_context.state['source_code'] = f.read()
-                    print(f"Loaded source code from {changed_files[0]}")
-                    print(callback_context.state['source_code'][:500])  # Print first 500 chars for verification
-                    callback_context.state['language'] = 'python'
-                    callback_context.state['error'] = None
-                else:
-                    callback_context.state['error'] = "No changed files found in the PR"
-                    callback_context.state['source_code'] = ''
-                    callback_context.state['language'] = 'python'
-            except Exception as e:
-                print(f"Error processing GitHub PR: {e}")
-                callback_context.state['error'] = f"Error processing GitHub PR: {e}"
-                callback_context.state['source_code'] = ''
-                callback_context.state['language'] = 'python'
-        else:
-            callback_context.state['error'] = "Not supported"
-            callback_context.state['source_code'] = ''
-            callback_context.state['language'] = 'python'
-
     # Initialize state variables for two-stage architecture
     state_initializers = {
         'static_analysis_report': {},
@@ -99,12 +96,9 @@ def initialize_two_stage_state(callback_context: CallbackContext):
 def save_analysis_to_state(tool: BaseTool, args: dict, tool_context: ToolContext, tool_response: dict):
     """Save code analysis results directly to state."""
     if tool.name == 'analyze_code_structure':
-        from .code_analyzer.tools import analyze_code_structure
-        analysis_result = analyze_code_structure(args['source_code'], args['language'])
-        tool_context.state['static_analysis_report'] = analysis_result
-        logger.info(f"Saved analysis result to state: {analysis_result}")
-
-        return types.Content(parts=[types.Part(text="Static analysis complete.")])
+        tool_context.state['static_analysis_report'] = tool_response
+        print(f"Saved analysis result to state: {tool_response}")
+        return tool_response
 
 
 # Create fresh agent instances for the two-stage system
@@ -131,7 +125,7 @@ coverage_validator_agent.instruction += "\n\nYou will receive the coverage scena
 # Configure Stage 2 agents
 incremental_test_implementer_agent.instruction += "\n\nYou will receive the test scenarios in the `{coverage_focused_scenarios}` state variable."
 
-selective_test_runner_agent.instruction += "\n\nYou will receive the test suite in the `{generated_test_code}` state variable and source code in the `{source_code}` state variable."
+selective_test_runner_agent.instruction += "\n\nYou will receive the test suite in the `{generated_test_code}` state variable and source code in the path `{source_code_path}`, use read_file_as_string tool to get the source code."
 
 # Configure final reporting agents (reused from existing system)
 report_generator_agent.instruction += "\n\nYou will receive coverage report in `{coverage_validation_result}`, test results in `{selective_test_results}`, source code in `{source_code}`, and generated test code in `{generated_test_code}`."
@@ -182,5 +176,5 @@ root_agent = SequentialAgent(
     name="TwoStageCoordinator",
     description="The master coordinator for the two-stage autonomous test suite generation system",
     sub_agents=[two_stage_system],
-    before_agent_callback=initialize_two_stage_state
+    before_agent_callback=[save_source_load_to_local, initialize_two_stage_state]
 )
