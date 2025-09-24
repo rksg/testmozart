@@ -1,6 +1,6 @@
 """Agents Package
 
-This package contains all the specialized agents for the autonomous test 
+This package contains all the specialized agents for the autonomous test
 suite generation system, organized according to Google ADK best practices.
 """
 
@@ -14,7 +14,7 @@ from .report_generator import report_generator_agent
 from .result_summarizer import result_summarizer_agent
 
 # Import new two-stage coordinator
-from .two_stage_coordinator import two_stage_root_agent as root_agent
+from .agent import root_agent
 
 __all__ = [
     'code_analyzer_agent',

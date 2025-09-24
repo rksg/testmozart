@@ -1,178 +1,186 @@
-"""Coordinator Agent
+"""Two-Stage Coordinator
 
-This module orchestrates the autonomous test suite generation system by
-coordinating multiple specialized agents in a structured workflow.
-
-Note: This is a legacy coordinator that has been replaced by the two_stage_coordinator.
-It is kept for reference but should not be used in the main system.
+This module orchestrates the new two-stage autonomous test suite generation system.
 """
 
 import json
+import re
+import logging
 from google.adk.agents import LlmAgent, SequentialAgent, LoopAgent
 from google.adk.agents.callback_context import CallbackContext
 from google.adk.tools.tool_context import ToolContext
 from google.adk.tools.base_tool import BaseTool
 from google.genai import types
+from utils.github import get_changed_files_from_pr
 
-# Import the individual agent instances from the current structure
-from .code_analyzer import code_analyzer_agent
-from .coverage_analyzer import coverage_analyzer_agent
-from .test_implementer.agent import create_test_implementer_agent
-from .test_runner.agent import create_test_runner_agent
-from .debugger_and_refiner import debugger_and_refiner_agent
-from .report_generator import report_generator_agent
-from .result_summarizer import result_summarizer_agent
+# Import agent creation functions to avoid sharing agent instances
+from .code_analyzer.agent import create_code_analyzer_agent
+from .report_generator.agent import create_report_generator_agent
+from .result_summarizer.agent import create_result_summarizer_agent
+
+# Import new Stage 1 agent creation functions
+from .scenario_coverage_designer.agent import scenario_coverage_designer_agent as create_scenario_coverage_designer
+from .coverage_validator.agent import coverage_validator_agent as create_coverage_validator
+# Import new Stage 2 agents and tools
+from .incremental_test_implementer.agent import incremental_test_implementer_agent as create_incremental_test_implementer
+from .selective_test_runner.agent import selective_test_runner_agent as create_selective_test_runner
+
+# Import exit_loop tool
+from .coverage_loop_controller.tools import exit_loop
+
+# Import configuration
+from .config import COVERAGE_MAX_ITERATIONS, EXECUTION_MAX_ITERATIONS
+
+logger = logging.getLogger("two_stage_system")
 
 
-def initialize_state(callback_context: CallbackContext):
-    """Parses the initial user message and populates the session state."""
+def initialize_two_stage_state(callback_context: CallbackContext):
+    """Initialize state for the two-stage architecture."""
     user_content = callback_context.user_content
     if user_content and user_content.parts:
-        try:
-            initial_data = json.loads(user_content.parts[0].text)
-            callback_context.state['source_code'] = initial_data.get('source_code')
-            callback_context.state['language'] = initial_data.get('language')
-        except (json.JSONDecodeError, AttributeError):
-            print("Warning: Could not parse initial JSON request. Treating content as raw source code.")
-            callback_context.state['source_code'] = user_content.parts[0].text
+        text = user_content.parts[0].text
+        if text and re.match(r'^https://github\.com/[^/]+/[^/]+/pull/\d+$', text):
+            try:
+                changed_files = get_changed_files_from_pr(text)
+                if changed_files:
+                    # Read the first changed file
+                    with open(changed_files[0], 'r', encoding='utf-8') as f:
+                        callback_context.state['source_code'] = f.read()
+                    print(f"Loaded source code from {changed_files[0]}")
+                    print(callback_context.state['source_code'][:500])  # Print first 500 chars for verification
+                    callback_context.state['language'] = 'python'
+                    callback_context.state['error'] = None
+                else:
+                    callback_context.state['error'] = "No changed files found in the PR"
+                    callback_context.state['source_code'] = ''
+                    callback_context.state['language'] = 'python'
+            except Exception as e:
+                print(f"Error processing GitHub PR: {e}")
+                callback_context.state['error'] = f"Error processing GitHub PR: {e}"
+                callback_context.state['source_code'] = ''
+                callback_context.state['language'] = 'python'
+        else:
+            callback_context.state['error'] = "Not supported"
+            callback_context.state['source_code'] = ''
             callback_context.state['language'] = 'python'
-    
-    # Initialize all required state variables to prevent KeyError
-    callback_context.state.setdefault('static_analysis_report', {})
-    callback_context.state.setdefault('test_scenarios', '')
-    callback_context.state.setdefault('coverage_report', {})
-    callback_context.state.setdefault('generated_test_code', '')
-    callback_context.state.setdefault('test_results', {"status": "UNKNOWN"})
-    callback_context.state.setdefault('comprehensive_report', {})
+
+    # Initialize state variables for two-stage architecture
+    state_initializers = {
+        'static_analysis_report': {},
+
+        # Stage 1 state variables
+        'coverage_focused_scenarios': [],
+        'coverage_validation_result': {},
+        'coverage_loop_decision': {},
+        'stage1_complete': False,
+
+        # Stage 2 state variables
+        'test_status_tracking': {},
+        'incremental_test_implementation': {},
+        'selective_test_results': {},
+        'execution_loop_decision': {},
+        'stage2_complete': False,
+
+        # Final artifacts
+        'comprehensive_report': {},
+        'generated_test_code': '',
+
+        # Iteration counters
+        'coverage_iteration': 0,
+        'execution_iteration': 0,
+    }
+    for key, default_value in state_initializers.items():
+        if callback_context.state.get(key) is None:
+            callback_context.state[key] = default_value
+
+    logger.info("Two-stage architecture state initialized")
 
 
 def save_analysis_to_state(tool: BaseTool, args: dict, tool_context: ToolContext, tool_response: dict):
-    """
-    This callback intercepts the result from the `analyze_code_structure` tool,
-    saves it directly to the session state, and ends the agent's turn.
-    This is more efficient than waiting for the LLM to summarize the result.
-    """
+    """Save code analysis results directly to state."""
     if tool.name == 'analyze_code_structure':
-        # Save the tool's direct output to the state.
-        tool_context.state['static_analysis_report'] = tool_response
-        # Return a simple content object. This signals to the ADK that the
-        # agent's turn is complete, preventing an unnecessary second LLM call.
+        from .code_analyzer.tools import analyze_code_structure
+        analysis_result = analyze_code_structure(args['source_code'], args['language'])
+        tool_context.state['static_analysis_report'] = analysis_result
+        logger.info(f"Saved analysis result to state: {analysis_result}")
+
         return types.Content(parts=[types.Part(text="Static analysis complete.")])
 
 
-# --- Configure Individual Agents for the Workflow ---
+# Create fresh agent instances for the two-stage system
+code_analyzer_agent = create_code_analyzer_agent()
+report_generator_agent = create_report_generator_agent()
+result_summarizer_agent = create_result_summarizer_agent()
 
-# 1. CodeAnalyzer: Use the callback to save output.
+# Create Stage 1 agent instances (imported as aliases)
+scenario_coverage_designer_agent = create_scenario_coverage_designer
+coverage_validator_agent = create_coverage_validator
+
+# Create Stage 2 agent instances (imported as aliases)
+incremental_test_implementer_agent = create_incremental_test_implementer
+selective_test_runner_agent = create_selective_test_runner
+
+# Configure the code analyzer
 code_analyzer_agent.after_tool_callback = save_analysis_to_state
 
-# 2. CoverageAnalyzer: Read from `source_code` and `test_scenarios`, save to `coverage_report`.
-coverage_analyzer_agent.instruction += "\n\nYou will receive the source code in `{source_code}` and test scenarios in `{test_scenarios}` state variables."
-coverage_analyzer_agent.output_key = "coverage_report"
+# Configure Stage 1 agents
+scenario_coverage_designer_agent.instruction += "\n\nYou will receive the static analysis report in the `{static_analysis_report}` state variable."
 
-# 3. TestImplementer: Read from `test_scenarios`, save to `generated_test_code`.
-def create_configured_test_implementer():
-    """Creates a properly configured test implementer agent."""
-    agent = create_test_implementer_agent()
-    agent.instruction += "\n\nYou will receive the test scenarios in the `{test_scenarios}` state variable."
-    agent.output_key = "generated_test_code"
-    return agent
+coverage_validator_agent.instruction += "\n\nYou will receive the coverage scenarios in the `{coverage_focused_scenarios}` state variable, static analysis in the `{static_analysis_report}` state variable, and current iteration count in the `{coverage_iteration}` state variable."
 
-# Create the main test implementer agent
-test_implementer_agent = create_configured_test_implementer()
+# Configure Stage 2 agents
+incremental_test_implementer_agent.instruction += "\n\nYou will receive the test scenarios in the `{coverage_focused_scenarios}` state variable."
 
-# 4. TestRunner: Read `source_code` & `generated_test_code`, save to `test_results`.
-test_runner_agent = create_test_runner_agent()
-async def build_test_runner_instruction(ctx: CallbackContext) -> str:
-    """Dynamically creates the prompt for the test runner with code from the state."""
-    source_code = ctx.state.get('source_code', '')
-    generated_code = ctx.state.get('generated_test_code', '')
+selective_test_runner_agent.instruction += "\n\nYou will receive the test suite in the `{generated_test_code}` state variable and source code in the `{source_code}` state variable."
 
-    source_code_json_str = json.dumps(source_code)
-    generated_code_json_str = json.dumps(generated_code)
-    
-    return f"""
-    You are a highly reliable test execution engine. Your task is to execute a test suite against source code.
+# Configure final reporting agents (reused from existing system)
+report_generator_agent.instruction += "\n\nYou will receive coverage report in `{coverage_validation_result}`, test results in `{selective_test_results}`, source code in `{source_code}`, and generated test code in `{generated_test_code}`."
 
-    First, call the `execute_tests_sandboxed` tool with the following two arguments:
-    - `source_code_under_test`: Set this to the string {source_code_json_str}
-    - `generated_test_code`: Set this to the string {generated_code_json_str}
+result_summarizer_agent.instruction += "\n\nYou will receive the comprehensive report in `{comprehensive_report}` and final test suite in `{generated_test_code}`."
 
-    Second, take the entire, raw JSON output from `execute_tests_sandboxed` and immediately pass it as the `raw_execution_output` argument to the `parse_test_results` tool.
-    Your final output must be only the structured JSON object returned by the `parse_test_results` tool. Do not add any commentary or explanation.
-    """
+# --- Stage 1: Coverage Optimization Loop ---
 
-test_runner_agent.instruction = build_test_runner_instruction
-test_runner_agent.output_key = "test_results"
-
-# 5. ReportGenerator: Read all analysis results, save to `comprehensive_report`.
-report_generator_agent.instruction += "\n\nYou will receive coverage_report, test_results, source_code, and generated_test_code from the shared state."
-report_generator_agent.output_key = "comprehensive_report"
-
-# 6. DebuggerAndRefiner: Read all context, save corrected code back to `generated_test_code`.
-# Import the exit_loop tool from the debugger_and_refiner package
-from .debugger_and_refiner.tools import exit_loop
-debugger_and_refiner_agent.tools.append(exit_loop)
-
-debugger_and_refiner_agent.instruction = """
-You are an expert Senior Software Debugging Engineer. Your sole purpose is to analyze a failed test run and fix the generated test code.
-
-You have access to the following information from the shared state:
-- `{static_analysis_report}`: A JSON report describing the original source code's structure.
-- `{generated_test_code}`: The full Python test code that failed. This is the code you must fix.
-- `{test_results}`: A structured JSON report from the test runner, detailing the failure.
-
-Your task is to meticulously analyze the `test_results`. If the `status` is "PASS", your job is done and you MUST call the `exit_loop` tool immediately.
-
-If the `status` is "FAIL", you must rewrite the `generated_test_code` to fix the errors identified in the `test_results`.
-
-**CRITICAL INSTRUCTIONS:**
-- If tests passed, call `exit_loop()`.
-- If tests failed, your output MUST be only the complete, corrected Python test code.
-- Ensure the corrected code includes the necessary imports to run, such as `import pytest` and importing the code under test from `source_to_test` (e.g., `from source_to_test import YourClass, your_function`).
-- Do NOT include any explanations, comments, or markdown formatting like ```python.
-"""
-debugger_and_refiner_agent.output_key = "generated_test_code"
-
-
-# --- Assemble Workflow Agents ---
-
-# Initial code analysis - this only runs once
-initial_analysis = SequentialAgent(
-    name="InitialAnalysis",
-    description="Performs initial code analysis to understand the structure.",
+# Create the coverage optimization loop with integrated validation and control
+coverage_optimization_loop = LoopAgent(
+    name="CoverageOptimizationLoop",
+    description="Stage 1: Optimizes test scenarios to achieve maximum code coverage",
     sub_agents=[
-        code_analyzer_agent,
+        scenario_coverage_designer_agent,
+        coverage_validator_agent  # Now includes loop control logic
+    ],
+    max_iterations=COVERAGE_MAX_ITERATIONS
+)
+
+# --- Stage 2: Execution Quality Loop ---
+
+# Simplified Stage 2: Direct test implementation and execution
+stage2_test_implementation = SequentialAgent(
+    name="Stage2TestImplementation",
+    description="Stage 2: Convert scenarios to executable tests and run them",
+    sub_agents=[
+        incremental_test_implementer_agent,
+        selective_test_runner_agent
     ]
 )
 
-# Create a separate test runner instance for the execution refinement loop
-execution_test_runner = create_test_runner_agent()
-execution_test_runner.name = "ExecutionTestRunner"  # Give it a unique name
-execution_test_runner.instruction = build_test_runner_instruction
-execution_test_runner.output_key = "test_results"
+# --- Complete Two-Stage System ---
 
-# Final execution and refinement loop - focuses on fixing syntax/execution errors
-execution_refinement_loop = LoopAgent(
-    name="ExecutionRefinementLoop",
-    description="Fixes execution errors in the final test code until it runs successfully.",
+two_stage_system = SequentialAgent(
+    name="TwoStageTestGeneration",
+    description="Complete two-stage test generation system with coverage optimization and test implementation",
     sub_agents=[
-        execution_test_runner,
-        debugger_and_refiner_agent
-    ],
-    max_iterations=3
+        code_analyzer_agent,              # Initial code analysis
+        coverage_optimization_loop,       # Stage 1: Coverage optimization
+        stage2_test_implementation,       # Stage 2: Test implementation and execution
+        report_generator_agent,          # Final reporting
+        result_summarizer_agent          # Final output formatting
+    ]
 )
 
-# The legacy_root_agent orchestrates a simplified workflow
-# NOTE: This is kept for reference only. Use two_stage_coordinator.root_agent instead.
-legacy_root_agent = SequentialAgent(
-    name="LegacyCoordinatorAgent",
-    description="Legacy coordinator for the autonomous test suite generation system.",
-    sub_agents=[
-        initial_analysis,
-        test_implementer_agent,
-        execution_refinement_loop,
-        report_generator_agent,
-        result_summarizer_agent,
-    ],
-    before_agent_callback=initialize_state
+# The root agent for the two-stage architecture
+root_agent = SequentialAgent(
+    name="TwoStageCoordinator",
+    description="The master coordinator for the two-stage autonomous test suite generation system",
+    sub_agents=[two_stage_system],
+    before_agent_callback=initialize_two_stage_state
 )
