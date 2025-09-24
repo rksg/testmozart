@@ -6,7 +6,7 @@ This agent analyzes test coverage and provides coverage metrics.
 import logging
 from google.adk.agents import LlmAgent
 from .tools import calculate_coverage
-from tools.workflow_tools import read_file_as_string
+from ..tools.workflow_tools import read_file_as_string
 
 # Set up logging
 logger = logging.getLogger(__name__)

@@ -5,7 +5,7 @@ This agent generates comprehensive test reports with metrics and insights.
 
 from google.adk.agents import LlmAgent
 from .tools import generate_comprehensive_report, format_report_as_markdown
-from tools.workflow_tools import read_file_as_string
+from ..tools.workflow_tools import read_file_as_string
 def create_report_generator_agent() -> LlmAgent:
     """Creates and returns a configured Report Generator agent."""
     return LlmAgent(

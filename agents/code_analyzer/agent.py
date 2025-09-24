@@ -6,7 +6,7 @@ into a structured format using AST analysis.
 
 from google.adk.agents import LlmAgent
 from .tools import analyze_code_structure
-from tools.workflow_tools import read_file_as_string
+from ..tools.workflow_tools import read_file_as_string
 
 def create_code_analyzer_agent() -> LlmAgent:
     """Creates and returns a configured Code Analyzer agent."""

@@ -33,8 +33,8 @@ from .config import COVERAGE_MAX_ITERATIONS, EXECUTION_MAX_ITERATIONS
 logger = logging.getLogger("two_stage_system")
 
 def save_source_load_to_local(callback_context: CallbackContext):
-    from utils.gcs_bucket import get_file_from_gcs
-    from utils.github import get_changed_file_from_pr
+    from .utils.gcs_bucket import get_file_from_gcs
+    from .utils.github import get_changed_file_from_pr
     """Saves the source code from GCS or GitHub to local state and filesystem."""
     user_content = callback_context.user_content
     if user_content and user_content.parts:

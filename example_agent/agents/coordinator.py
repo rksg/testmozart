@@ -11,7 +11,7 @@ from .test_case_designer import test_case_designer_agent
 from .test_implementer import test_implementer_agent
 from .test_runner import test_runner_agent
 from .debugger_and_refiner import debugger_and_refiner_agent
-from tools.workflow_tools import exit_loop
+from ..tools.workflow_tools import exit_loop
 
 # --- State Initialization ---
 
